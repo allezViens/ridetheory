@@ -1,0 +1,1 @@
+app.controller('Main', ['$scope', function ($scope) {...}]);
