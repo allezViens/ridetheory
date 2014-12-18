@@ -1,0 +1,12 @@
+$font-stack:    "Open Sans", sans-serif;
+$primary-color: #333;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font: 100% $font-stack;
+}
+
+@import "grid";
