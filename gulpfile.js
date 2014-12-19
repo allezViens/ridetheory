@@ -1,7 +1,8 @@
 var gulp = require('gulp'),
     inject = require('gulp-inject'),
     wiredep = require('wiredep').stream,
-    sass = require('gulp-sass');
+    sass = require('gulp-sass'),
+    watch = require('gulp-watch');
 
 var paths = {
   bower : "./client/bower_components/",
@@ -10,7 +11,7 @@ var paths = {
   sass: "./client/sass/style.scss"
 }
 
-// Compile Sass ----> styles.css
+// Compile all .scss files ----> styles.css
 gulp.task('sass', function () {
     gulp.src(paths.sass)
         .pipe(sass())
@@ -27,7 +28,11 @@ gulp.task('bower', function () {
     .pipe(gulp.dest(paths.client));
 });
 
+gulp.task('watch', function() {
+  gulp.watch('./client/sass/*.scss', ['sass']);
+});
+
 gulp.task('default', function() {
-    gulp.start('sass','bower');
+    gulp.start('sass','bower','watch');
 });
 

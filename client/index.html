@@ -12,16 +12,21 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <p>JIMMY</p>
-    <div ui-view></div>
-    <div></div>   
+
+    <div id="container" ui-view></div>
+   
   <!-- bower:js -->
   <script src="bower_components/jquery/dist/jquery.js"></script>
   <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>  
-  
+  <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
   <!-- endbower -->
   <script src="app/app.js"></script>
-  <script src="app/controllers/SearchController.js"></script>  
+  <script src="app/core/core.module.js"></script>
+  <script src="app/core/controllers/Compose.controller.js"></script>  
+  <script src="app/core/config/config.js"></script>  
+  <!-- <script src="app/core/services/google/google.service.js"></script>  -->
+  <script src="app/core/controllers/Compose.controller.js"></script>  
+
+
   </body>
 </html> 
