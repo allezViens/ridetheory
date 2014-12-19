@@ -35,9 +35,9 @@ def findDrivers( origin, destination ):
 def findPassengers ( origin, destination ):
   return findNodes("Passenger", origin, destination)
 
-createDriver([10,12], [43,45], "Jon")
-origin = [10,12]
-destination = [43,45]
-createPassenger(origin, destination, "Adam")
-createPassenger(origin, destination, "Tony")
-print(findPassengers(origin, destination))
+# createDriver([10,12], [43,45], "Jon")
+# origin = [10,12]
+# destination = [43,45]
+# createPassenger(origin, destination, "Adam")
+# createPassenger(origin, destination, "Tony")
+# print(findPassengers(origin, destination))
