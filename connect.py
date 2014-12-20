@@ -27,13 +27,31 @@ def findNodes( label, origin, destination ):
   a = "(origin {coordinates : %s})" % origin
   b = "(destination {coordinates: %s})" % destination
   query = "MATCH %s <-[:ORIGIN]-(passengers:%s)-[:DESTINATION]->%s return passengers" %(a,label,b)
-  return graph.cypher.execute(query)
+  data = graph.cypher.execute(query)
+  return parseTableData(data)
 
 def findDrivers( origin, destination ):
   return findNodes("Driver", origin, destination)
 
 def findPassengers ( origin, destination ):
   return findNodes("Passenger", origin, destination)
+#
+'''
+   | passengers              
+---+--------------------------
+ 1 | (n0:Driver {id:"Jon"})  
+ 2 | (n5:Driver {id:"Jimmy"})
+'''
+def parseTableData( data ):
+  res = []
+  # for i in range(0, len(data) + 1):
+    # res.append(data[i][0]['id'])
+  for record in data:
+    res.append(record[0]['id'].encode("utf-8"))
+  return res
+
+
+
 
 # origin = [10,12]
 # destination = [43,45]
