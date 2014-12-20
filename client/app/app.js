@@ -1,17 +1,10 @@
-angular.module('app', [
-  'ui.router',
-  'SearchController'
-])
+;(function(){
+'use strict';
+  angular.module('app', [
+    'ui.router',
+    'core'
+  ])
 
-.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+}).call(this)
 
-  $stateProvider
 
-  .state('map', {
-    url: '/',
-    templateUrl: 'app/search.html',
-    controller: 'SearchController'
-  })
-
-  $urlRouterProvider.otherwise('/');
-})
