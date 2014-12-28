@@ -2,10 +2,12 @@
 'use strict';
 
 angular
-  .module('app')
-  .config( main );
+  .module('core', ['ui.router'])
+  .config(main);
 
 function main($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider){
+
+  $urlRouterProvider.otherwise('/');
 
   $stateProvider
   .state('Compose', {
@@ -21,11 +23,6 @@ function main($stateProvider, $urlRouterProvider, $locationProvider, $httpProvid
     controller: 'ComposeController as vm'
   });  
   
-  $urlRouterProvider.otherwise('/');
-
-
-
-
   }
 }).call(this);
 

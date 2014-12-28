@@ -2,10 +2,10 @@
   'use strict';
   
   angular
-    .module('core')
+    .module('core:ComposeController',[])
     .controller('ComposeController', ComposeController);
 
-    function ComposeController($scope, $http, $state, $q){
+    function ComposeController($scope, $http, $q){ // removed $state because of testing errors
       
       var vm = this;
 
@@ -32,11 +32,11 @@
       }
 
       // returns an object with latitude and longitude
-      function findCoordinates (coordinates, waypoint, callback) {
+      function findCoordinates (place, waypoint, callback) {
         var baseURL = "http://nominatim.openstreetmap.org/search?format=json&limit=3&q=";
-        $http({
+        return $http({
           method: "GET",
-          url: baseURL+coordinates,
+          url: baseURL+place,
         }).success(function(data) {
           var place = data[0];  // returns multiple places. first object is the most accurate
           vm.user[waypoint] = { 'lat': place.lat, 'lon': place.lon };
@@ -61,7 +61,7 @@
         }).success(function (data) {
           //stop animation
         
-        // $state.go(redirect); // redirect to either driver or passenger
+        // $state.go('redirect'); // redirect to either driver or passenger
 
         })     
       };
