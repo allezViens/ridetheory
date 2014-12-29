@@ -2,7 +2,9 @@ var gulp = require('gulp'),
     inject = require('gulp-inject'),
     wiredep = require('wiredep').stream,
     sass = require('gulp-sass'),
-    watch = require('gulp-watch');
+    watch = require('gulp-watch')
+    karma = require('karma').server;
+    runSequence = require('run-sequence');
 
 var paths = {
   bower : "./client/bower_components/",
@@ -32,7 +34,15 @@ gulp.task('watch', function() {
   gulp.watch('./client/sass/*.scss', ['sass']);
 });
 
+gulp.task('karma', function (done) {
+  karma.start({
+    configFile: __dirname + '/karma.conf.js',
+  }, done);
+});
+
 gulp.task('default', function() {
-    gulp.start('sass','bower','watch');
+    runSequence('sass','bower','watch', 'karma', function () {
+      console.log('gulp success!')
+    });
 });
 

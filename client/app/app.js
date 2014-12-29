@@ -1,8 +1,9 @@
 ;(function(){
-'use strict';
+
   angular.module('app', [
     'ui.router',
-    'core'
+    'core',
+    'core:ComposeController'
   ])
 
 }).call(this)
