@@ -17,12 +17,19 @@ function main($stateProvider, $urlRouterProvider, $locationProvider, $httpProvid
   });
 
   $stateProvider
-  .state('Paths', {
-    url: '/paths',
-    templateUrl: 'app/core/views/paths.html',
-    controller: 'ComposeController as vm'
+  .state('driver', {
+    url: '/driver',
+    templateUrl: 'app/core/views/driver.html',
+    controller: 'DriverController as driver'
   });  
   
+  $stateProvider
+  .state('passenger', {
+    url: '/passenger',
+    templateUrl: 'app/core/views/passenger.html',
+    controller: 'PassengerController as passenger'
+  });
+
   }
 }).call(this);
 

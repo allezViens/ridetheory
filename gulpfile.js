@@ -2,15 +2,18 @@ var gulp = require('gulp'),
     inject = require('gulp-inject'),
     wiredep = require('wiredep').stream,
     sass = require('gulp-sass'),
-    watch = require('gulp-watch')
+    watch = require('gulp-watch'),
+    runSequence = require('run-sequence'),
+    es = require('event-stream'),
     karma = require('karma').server;
-    runSequence = require('run-sequence');
 
 var paths = {
   bower : "./client/bower_components/",
   index : "./client/index.html",
   client : "./client/",
-  sass: "./client/sass/style.scss"
+  sass: "./client/sass/style.scss",
+  core: "./client/app/core/**/*.js",
+  app: "./client/app/app.js"
 }
 
 // Compile all .scss files ----> styles.css
@@ -30,6 +33,17 @@ gulp.task('bower', function () {
     .pipe(gulp.dest(paths.client));
 });
 
+gulp.task('core', function () {
+    var core = gulp.src( paths.core, {read:false} );
+    var app = gulp.src(paths.app, {read:false});
+    var options = { read:false, name: 'core', ignorePath: '/client' };  
+    
+    return gulp.src( paths.index )
+      .pipe( inject( es.merge( core, app ), options))
+      .pipe( gulp.dest( paths.client ) )
+})
+
+
 gulp.task('watch', function() {
   gulp.watch('./client/sass/*.scss', ['sass']);
 });
@@ -41,7 +55,7 @@ gulp.task('karma', function (done) {
 });
 
 gulp.task('default', function() {
-    runSequence('sass','bower','watch', 'karma', function () {
+    runSequence('core', 'sass','bower','watch', 'karma', function () {
       console.log('gulp success!')
     });
 });
