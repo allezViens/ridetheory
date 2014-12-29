@@ -1,11 +1,11 @@
-;(function(){
+;(function () {
   'use strict';
   
   angular
     .module('core:ComposeController',[])
     .controller('ComposeController', ComposeController);
 
-    function ComposeController($scope, $http, $q){ // removed $state because of testing errors
+    function ComposeController($scope, $http, $q, $state){ // removed $state because of testing errors
       
       var vm = this;
 
@@ -60,10 +60,11 @@
           })
         }).success(function (data) {
           //stop animation
-        
-        // $state.go('redirect'); // redirect to either driver or passenger
-
-        })     
+          $state.go(redirect); // redirect to either driver or passenger
+        }).error(function(data, status){
+          console.log(status);
+          $state.go(redirect);
+        });     
       };
   }
 }).call(this);
