@@ -40,6 +40,18 @@ def findDrivers( origin, destination ):
 
 def findPassengers ( origin, destination ):
   return findNodes("Passenger", origin, destination)
+
+def pickDriver(passengerId, driverId):
+  a = graph.merge_one("Passenger","id",passengerId)
+  b = graph.merge_one("Driver","id",driverId)
+  graph.create_unique(Relationship(a,"PICKS",b))
+
+def pickPassenger(driverId, passengerId):
+  a = graph.merge_one("Driver","id",driverId)
+  b = graph.merge_one("Passenger","id",passengerId)
+  graph.create_unique(Relationship(a,"PICKS",b))
+  # query = "MATCH (a),(b) WHERE a.id = %s AND b.id = %s CREATE (a)-[r:PICKS]->(b) RETURN r" %(userAId, userBId)
+  # data = graph.cypher.execute(query)
 #
 '''
    | passengers              
