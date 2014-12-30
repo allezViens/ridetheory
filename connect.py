@@ -1,10 +1,15 @@
-from py2neo import Graph, watch, Node, Relationship, Path
+from py2neo import Graph, watch, Node, Relationship, Path, ServiceRoot
+import os
 
 #watch requests to db-server
 # watch("httpstream")
 
 # connect to localhost:7474
-graph = Graph()
+
+#graph = Graph()
+
+graphenedb_url = os.environ.get("GRAPHENEDB_URL", "http://localhost:7474/");
+graph = ServiceRoot(graphenedb_url).graph
 
 def createWaypoint( coordinates ):
   return graph.merge_one("Waypoint", "coordinates", coordinates)
@@ -35,6 +40,18 @@ def findDrivers( origin, destination ):
 
 def findPassengers ( origin, destination ):
   return findNodes("Passenger", origin, destination)
+
+def pickDriver(passengerId, driverId):
+  a = graph.merge_one("Passenger","id",passengerId)
+  b = graph.merge_one("Driver","id",driverId)
+  graph.create_unique(Relationship(a,"PICKS",b))
+
+def pickPassenger(driverId, passengerId):
+  a = graph.merge_one("Driver","id",driverId)
+  b = graph.merge_one("Passenger","id",passengerId)
+  graph.create_unique(Relationship(a,"PICKS",b))
+  # query = "MATCH (a),(b) WHERE a.id = %s AND b.id = %s CREATE (a)-[r:PICKS]->(b) RETURN r" %(userAId, userBId)
+  # data = graph.cypher.execute(query)
 #
 '''
    | passengers              
@@ -49,9 +66,6 @@ def parseTableData( data ):
   for record in data:
     res.append(record[0]['id'].encode("utf-8"))
   return res
-
-
-
 
 # origin = [10,12]
 # destination = [43,45]
