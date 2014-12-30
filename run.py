@@ -15,8 +15,9 @@ def root():
 @app.route('/driver', methods=['GET', 'POST'])
 def drivers():
 	if (request.method == 'GET'):
-		origin = request.args.get('origin')
-		destination = request.args.get('destination')
+		data = json.loads(request.data)
+		origin = data['origin']
+		destination = data['destination']
 		temp = connect.findDrivers(origin, destination)
 		return str(temp)
 	if (request.method == 'POST'):
@@ -35,7 +36,15 @@ def passengers():
 	if (request.method == 'POST'):
 		if (request.headers['Content-Type'] == 'application/json;charset=UTF-8'):
 			data = json.loads(request.data)
-			connect.createPassenger([data['origin']['lat'],data['origin']['lon']], [data['destination']['lat'],data['destination']['lon']], 1)
+			origin = []
+			origin.append(float(data['origin'][0]))
+			origin.append(float(data['origin'][1]))
+			destination = []
+			destination.append(float(data['destination'][0]))
+			destination.append(float(data['destination'][1]))
+			print(origin,destination)
+			print(data['id'])
+			connect.createPassenger(origin, destination, data['id'])
 			return 'Passenger added to database'
 
 if (__name__ == '__main__'):
