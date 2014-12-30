@@ -8,17 +8,11 @@
     function ComposeController($scope, $http, $q, $state){ // removed $state because of testing errors
       
       var vm = this;
-
       vm.user = {};
 
       vm.findCoordinates = findCoordinates;      
-      vm.createUser = createUser;
+      vm.find = createUser;
       vm.getUser = getUser;
-
-      // gets all form data from compose.html
-      function createUser (user) {
-        vm.user = angular.copy(user);
-      }
 
       // once user has hit submit, its a chain of events that get user info and populates lat/long before posting data to server
       function getUser (user) {
@@ -31,15 +25,22 @@
         });
       }
 
+
+      // gets all form data from compose.html
+      var createUser = function (user) {
+        vm.user = angular.copy(user);
+      }
+
       // returns an object with latitude and longitude
       function findCoordinates (place, waypoint, callback) {
         var baseURL = "http://nominatim.openstreetmap.org/search?format=json&limit=3&q=";
         return $http({
           method: "GET",
-          url: baseURL+place,
+          url: baseURL+place
         }).success(function(data) {
           var place = data[0];  // returns multiple places. first object is the most accurate
-          vm.user[waypoint] = { 'lat': place.lat, 'lon': place.lon };
+          vm.user[waypoint] = [place.lat,place.lon];
+          console.log(vm.user.waypoint);
 
           callback();
         })
@@ -52,11 +53,12 @@
 
         $http({
           method: 'POST',
-          url: 'localhost/' + redirect ,
+          url: '/' + redirect ,
           data: JSON.stringify({
             name: vm.user.name,
             origin: vm.user.originCoordinates,
-            destination: vm.user.destinationCoordinates
+            destination: vm.user.destinationCoordinates,
+            type: 'create'
           })
         }).success(function (data) {
           //stop animation

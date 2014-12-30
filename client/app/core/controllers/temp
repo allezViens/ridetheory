@@ -1,0 +1,121 @@
+@function grey($opacity){
+  @return rgba(136, 207, 48,$opacity);
+}
+
+.passenger {
+  h1 {
+    @include fontlight;
+    text-align: center;
+  }
+}
+
+.passenger-block {
+  vertical-align: middle;
+  text-align: center;
+  padding: 5% 0;
+  margin: 2% 0;
+  width: 100%;
+  border: 1px solid lightgrey;
+}
+
+///////////////////////////////////
+
+.passenger-role {
+  @include fontlight;
+  padding: 2% 0;
+  webkit-user-select: none;
+
+  .passenger-drivers {
+    user-select: none;
+    cursor: pointer;
+    padding: 1%;
+    border-bottom-style:  solid;
+    border-bottom-width: thin;
+    border-bottom-color: $green;
+    transition: all 200ms ease;
+  }
+
+  .expanded {
+    // background-color: grey(0.3);
+    margin-left: -16px;
+    margin-right: -16px;
+    transition: all 100ms ease; 
+    box-shadow: 0px 2px 5px lightgrey;
+  }
+
+  .path {
+      height: 100%;
+      display: table;
+      width: 50%;
+      padding-left: 2%;
+      margin: 2% 0;
+      font-size: 1.5rem;
+  }
+
+  .deviation {
+      height: 100%;
+      display: table;
+      width: 50%;
+      padding-left: 2%;
+      margin: 2% 0;
+      font-size: 2rem;
+  }
+
+  .box {
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;     
+  }
+
+  .sidebar {
+      width: 100px;
+      font-size: 1.2rem;
+  }
+
+  .details {
+    width: 100%;
+    .route {
+      img {width: 50%;}
+      text-align: right;
+      display: inline-block;
+      width: 60%;
+    }
+    .info {
+      text-align: right;
+      display: inline-block;
+      width: 39%;
+      text-align: left;
+    }
+  }
+}
+
+
+<div class="passenger" ng-controller="PassengerController">
+  <h1>Available Drivers</h1>
+
+  <div class="passenger-role">
+        <div class="passenger-drivers" 
+          ng-class="{ 'expanded' : isSelected}"
+          ng-repeat='driver in passenger.drivers'>
+          <div class="header" ng-init="isSelected = false"
+          ng-click="isSelected = !isSelected">
+            <div class="box sidebar">
+              <img src = "{{ driver.img }}"/>
+              {{ driver.name }}
+            </div>
+            <div class="box path">
+              début: <b>{{ driver.start }}</b> <br>
+              fin: <b>{{ driver.end }}</b>
+            </div>
+            <div class="box deviation">
+              {{ driver.deviation }}
+            </div>
+          </div>
+          <div class="details" ng-show="isSelected">
+            <div class="route"><img src="/map.png"></div>
+            <div class="info">
+              <button ng-click="pingDriver()">Contact Driver</button>
+            </div>
+        </div>
+</div>
+

@@ -8,6 +8,8 @@
     function PassengerController ($scope, $http, $state, $q, $timeout) {
       var passenger = this;
       passenger.drivers = [];
+      var drivers = [];
+
 
       //set some timeout to push to passenger.drivers array
       var push = function (data, array) {
@@ -16,26 +18,19 @@
         }
       }
 
-      // dummy data
-      var drivers = [
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        
-
-      ];
+            // returns an object with latitude and longitude
+      function findDrivers (origin,destination) {
+        return $http({
+          method: 'GET',
+          url: '/driver',
+          data: JSON.stringify({
+            origin: origin,
+            destination: destination
+          })
+        }).success(function(data) {
+          passenger.drivers = data;
+        })
+      }
 
       (passenger.getDrivers = function (array) {
         array.forEach(function (item, index) {
