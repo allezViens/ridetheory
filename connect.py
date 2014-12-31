@@ -45,6 +45,7 @@ def findNodes( label, origin, destination ):
   data = graph.cypher.execute(query)
   print 'data'
   print data
+  print 'after data'
   return parseTableData(data)
 
 def findDrivers( origin, destination ):
@@ -74,6 +75,8 @@ def pickPassenger(driverId, passengerId):
  2 | (n5:Driver {id:"Jimmy"})
 '''
 def parseTableData( data ):
+  print 'parseTableData'
+  print data
   res = []
   # for i in range(0, len(data) + 1):
     # res.append(data[i][0]['id'])
