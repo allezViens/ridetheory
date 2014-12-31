@@ -15,13 +15,18 @@ def root():
 @app.route('/driver', methods=['GET', 'POST'])
 def drivers():
 	if (request.method == 'GET'):
+		print 'get method'
 		origin = []
 		origin.append(float(request.args.get('oLat')))
 		origin.append(float(request.args.get('oLong')))
 		destination = []
 		destination.append(float(request.args.get('dLat')))
 		destination.append(float(request.args.get('dLong')))
+		print origin
+		print destination
 		results = connect.findDrivers(origin, destination)
+		print 'after results'
+		print results
 		return jsonify(matches=results)
 	if (request.method == 'POST'):
 		if (request.headers['Content-Type'][:16] == 'application/json'):
@@ -51,7 +56,11 @@ def passengers():
 		destination = []
 		destination.append(float(request.args.get('dLat')))
 		destination.append(float(request.args.get('dLong')))
+		print origin
+		print destination
 		results = connect.findPassengers(origin, destination)
+		print 'after results'
+		print results
 		return jsonify(matches=results)
 	if (request.method == 'POST'):
 		if (request.headers['Content-Type'][:16] == 'application/json'):
