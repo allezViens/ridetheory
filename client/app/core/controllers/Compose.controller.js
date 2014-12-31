@@ -5,8 +5,7 @@
     .module('core:ComposeController',[])
     .controller('ComposeController', ComposeController);
 
-    function ComposeController($scope, $http, $q, $state){ // removed $state because of testing errors
-      
+    function ComposeController($scope, $http, $q, $state, $rootScope){ // removed $state because of testing errors
       var vm = this;
       vm.user = {};
 
@@ -40,31 +39,31 @@
         }).success(function(data) {
           var place = data[0];  // returns multiple places. first object is the most accurate
           vm.user[waypoint] = [place.lat,place.lon];
-          console.log(vm.user.waypoint);
-
           callback();
         })
       }
 
-      // create user, then get origin, then get destination, then save lat,lon to user
+      // create usfer, then get origin, then get destination, then save lat,lon to user
       function postData (user) {
         vm.user = angular.copy(user);
+        $rootScope.origin = vm.user.originCoordinates;
+        console.log($rootScope.origin,$rootScope.origin[0]);
+        $rootScope.destination = vm.user.destinationCoordinates; 
+
         var redirect = vm.user.title;
 
         $http({
           method: 'POST',
           url: '/' + redirect ,
           data: JSON.stringify({
-            name: vm.user.name,
+            id: vm.user.id,
             origin: vm.user.originCoordinates,
             destination: vm.user.destinationCoordinates,
             type: 'create'
           })
         }).success(function (data) {
-          //stop animation
-          $state.go(redirect); // redirect to either driver or passenger
+          $state.go(redirect)
         }).error(function(data, status){
-          console.log(status);
           $state.go(redirect);
         });     
       };
