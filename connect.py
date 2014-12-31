@@ -2,7 +2,7 @@ from py2neo import Graph, watch, Node, Relationship, Path, ServiceRoot
 import os
 
 #watch requests to db-server
-# watch("httpstream")
+watch("httpstream")
 
 #This is for using localhost 
 #graph = Graph()
