@@ -36,15 +36,21 @@ def createPassenger( origin, destination, id):
 #return all nodes with same origin and destination 
 #origin and destination are arrays [lat,long]
 def findNodes( label, origin, destination ):
+  print 'in find nodes'
   a = "(origin {coordinates : %s})" % origin
   b = "(destination {coordinates: %s})" % destination
   query = "MATCH %s <-[:ORIGIN]-(passengers:%s)-[:DESTINATION]->%s return passengers" %(a,label,b)
+  print 'query'
+  print query
   data = graph.cypher.execute(query)
+  print 'data'
+  print data
   return parseTableData(data)
 
 def findDrivers( origin, destination ):
+  print 'in find drivers'
   return findNodes("Driver", origin, destination)
-  print('tg')
+
 
 def findPassengers ( origin, destination ):
   return findNodes("Passenger", origin, destination)
