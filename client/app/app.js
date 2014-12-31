@@ -4,8 +4,8 @@
     'ui.router',
     'core',
     'core:ComposeController',
-    'core:DriverController',
     'core:PassengerController',
+    'core:DriverController',
     'ngFx'
   ])
 

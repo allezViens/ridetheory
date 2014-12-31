@@ -5,9 +5,13 @@
     .module('core:PassengerController',['ngFx'])
     .controller('PassengerController', PassengerController);
 
-    function PassengerController ($scope, $http, $state, $q, $timeout) {
+    function PassengerController ($scope, $http, $state, $q, $timeout, $rootScope) {
+      
+
       var passenger = this;
       passenger.drivers = [];
+      var drivers = [];
+      passenger.findDrivers = findDrivers;
 
       //set some timeout to push to passenger.drivers array
       var push = function (data, array) {
@@ -16,33 +20,33 @@
         }
       }
 
-      // dummy data
-      var drivers = [
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        { name: 'Thomas ', start: 'Berkeley, CA', end: 'Palo Alto, CA', deviation: '10 min', img: 'https://avatars1.githubusercontent.com/u/1794233?v=3&s=100'},
-        { name: 'Jimmy ', start: 'Oakland, CA', end: 'San Jose, CA', deviation: '8 min', img: 'https://avatars2.githubusercontent.com/u/7923322?v=3&s=100'},
-        { name: 'Beth ', start: 'Richmond, CA', end: 'Fremon, CA', deviation: '12 min', img: 'https://avatars1.githubusercontent.com/u/7968370?v=3&s=100'},
-        
 
-      ];
+      // http://127.0.0.1:5000/driver?oLat=39.52927&oLong=-119.8136744&dLat=37.7792768&dLong=-122.4192704
+      // returns an object with latitude and longitude
+      var findDrivers = function() {
+        $http({
+          method: 'GET',
+          url: '/driver',
+          params: {
+            oLat: $rootScope.origin[0],
+            oLong: $rootScope.origin[1],
+            dLat: $rootScope.destination[0],
+            dLong: $rootScope.destination[1]
+          }
+        }).success(function(data) {
+          passenger.drivers = data.matches;
+        }).error(function(data) {
+          console.log("Data corrupts");
+        })
+      }
 
-      (passenger.getDrivers = function (array) {
+      findDrivers();
+      passenger.getDrivers = function (array) {
         array.forEach(function (item, index) {
           $timeout(push(item,passenger.drivers), index * 50);
         })
         return passenger.drivers;
-      })(drivers);
+      };
 
     }
 }).call(this);
