@@ -8,14 +8,14 @@ watch("httpstream")
 #graph = Graph()
 
 # This is for using graphenedb on heroku and azure on local machine
-# graphenedb_url = os.environ.get("GRAPHENEDB_URL", "http://neo4j-av.cloudapp.net:7474/");
-# graph = ServiceRoot(graphenedb_url).graph
+graphenedb_url = os.environ.get("GRAPHENEDB_URL", "http://neo4j-av.cloudapp.net:7474/");
+graph = ServiceRoot(graphenedb_url).graph
 
 #This is for connecting to local host for testing
 # graph = ServiceRoot("http://localhost:7474/").graph
 
 #This is for connecting to azure always
-graph = ServiceRoot("http://neo4j-av.cloudapp.net:7474/").graph
+# graph = ServiceRoot("http://neo4j-av.cloudapp.net:7474/").graph
 
 
 def createWaypoint( coordinates ):
