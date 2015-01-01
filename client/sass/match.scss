@@ -1,0 +1,25 @@
+html, body, #container {
+  height: 100%;
+}
+
+.match {
+  position: relative;
+  height: 100%;
+  width: 100%;
+
+  .menu-box {
+    position: absolute;
+    width: 200px;
+    height: 220px;
+    background-color: white;
+  }
+
+  #map-canvas {
+    position: absolute; 
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+}

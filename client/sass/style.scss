@@ -1,6 +1,7 @@
 $font-stack:    "Open Sans", sans-serif;
 $green: rgba(136, 207, 48, 0.75);
 @import "mixins";
+@import "../bower_components/normalize.css/normalize.css";
 
 // to make width inclusive of padding and margins, * applies to all elements
 *, *:before, *:after {
@@ -17,10 +18,7 @@ html {
 // use as our main container, center on page with margin left/right: auto
 #container {
   margin: 0 auto;
-  max-width: 53rem;
-  width: 90%;
 }
 
 @import "compose";
-
-@import "passenger";
+@import "match";

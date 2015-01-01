@@ -1,33 +1,26 @@
-;(function () {
+(function () {
   'use strict';
   
   angular
-    .module('core:ComposeController',[])
-    .controller('ComposeController', ComposeController);
+    .module('app.search')
+    .controller('Search', Search);
 
-    function ComposeController($scope, $http, $q, $state, $rootScope){ // removed $state because of testing errors
+    /* ngInject */
+    function Search($http, $state, userService){ 
       var vm = this;
-      vm.user = {};
 
       vm.findCoordinates = findCoordinates;      
-      vm.find = createUser;
-      vm.getUser = getUser;
+      vm.submitUser = submitUser;
 
       // once user has hit submit, its a chain of events that get user info and populates lat/long before posting data to server
-      function getUser (user) {
+      function submitUser (user) {
         //start animation
-        createUser(user);
+        vm.user = angular.copy(user);
         findCoordinates(user.origin, "originCoordinates", function() { 
           return findCoordinates(user.destination, "destinationCoordinates", function() {
             return postData(vm.user);
           });
         });
-      }
-
-
-      // gets all form data from compose.html
-      var createUser = function (user) {
-        vm.user = angular.copy(user);
       }
 
       // returns an object with latitude and longitude
@@ -40,15 +33,14 @@
           var place = data[0];  // returns multiple places. first object is the most accurate
           vm.user[waypoint] = [place.lat,place.lon];
           callback();
+        }).error(function(data){
+          console.log(data);
         })
       }
 
       // create usfer, then get origin, then get destination, then save lat,lon to user
       function postData (user) {
-        vm.user = angular.copy(user);
-        $rootScope.origin = vm.user.originCoordinates;
-        console.log($rootScope.origin,$rootScope.origin[0]);
-        $rootScope.destination = vm.user.destinationCoordinates; 
+        userService.setUser(user);
 
         var redirect = vm.user.title;
 
@@ -62,12 +54,12 @@
             type: 'create'
           })
         }).success(function (data) {
-          $state.go(redirect)
+          $state.go('Map')
         }).error(function(data, status){
           $state.go(redirect);
         });     
       };
   }
-}).call(this);
+})();
     
 
