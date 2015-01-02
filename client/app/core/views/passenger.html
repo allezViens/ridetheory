@@ -1,18 +1,18 @@
-<div class="passenger" ng-controller="PassengerController">
+<div class="passenger">
   <h1>Available Drivers</h1>
 
   <div class="passenger-role">
         <div class="passenger-drivers fx-fade-up fx-easing-sine" ng-repeat='driver in passenger.drivers'>
           <div class="box sidebar">
             <img src = "{{ driver.img }}"/>
-            {{ driver.name }}
+            {{ driver }}
           </div>
           <div class="box path">
-            début: <b>{{ driver.start }}</b> <br>
-            fin: <b>{{ driver.end }}</b>
+            début: <b>{{ $rootScope.origin }}</b> <br>
+            fin: <b>{{ $rootScope.destination }}</b>
           </div>
           <div class="box deviation">
-            {{ driver.deviation }}
+            10 min.
           </div>
         </div>
 </div>

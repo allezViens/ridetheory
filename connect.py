@@ -1,75 +1,68 @@
-from py2neo import Graph, watch, Node, Relationship, Path, ServiceRoot
-import os
+import mysql.connector
 
-#watch requests to db-server
-# watch("httpstream")
+# from py2neo import Graph, watch, Node, Relationship, Path, ServiceRoot
+# import os
 
-# connect to localhost:7474
+# graphenedb_url = os.environ.get("GRAPHENEDB_URL", "http://localhost:7474/");
+# graph = ServiceRoot(graphenedb_url).graph
 
-#graph = Graph()
+# def createWaypoint( coordinates ):
+#   return graph.merge_one("Waypoint", "coordinates", coordinates)
 
-graphenedb_url = os.environ.get("GRAPHENEDB_URL", "http://localhost:7474/");
-graph = ServiceRoot(graphenedb_url).graph
+# #origin and destination are dictionaries 
+# def createDriver( origin, destination, id ):
+#   driver = graph.merge_one("Driver", "id", id)
+#   graph.create_unique(Relationship(driver, "ORIGIN", createWaypoint(origin) ))
+#   graph.create_unique(Relationship(driver, "DESTINATION", createWaypoint(destination) ))
 
-def createWaypoint( coordinates ):
-  return graph.merge_one("Waypoint", "coordinates", coordinates)
+# # create node:Passenger with 
+# def createPassenger( origin, destination, id):
+#   passenger = graph.merge_one("Passenger", "id", id)
+#   graph.create_unique(Relationship(passenger, "ORIGIN", createWaypoint(origin) ))
+#   graph.create_unique(Relationship(passenger, "DESTINATION", createWaypoint(destination) ))
 
-#origin and destination are dictionaries 
-def createDriver( origin, destination, id ):
-  driver = graph.merge_one("Driver", "id", id)
-  graph.create_unique(Relationship(driver, "ORIGIN", createWaypoint(origin) ))
-  graph.create_unique(Relationship(driver, "DESTINATION", createWaypoint(destination) ))
+# #return all nodes with same origin and destination 
+# #origin and destination are arrays [lat,long]
+# def findNodes( label, origin, destination ):
+#   a = "(origin {coordinates : %s})" % origin
+#   b = "(destination {coordinates: %s})" % destination
+#   query = "MATCH %s <-[:ORIGIN]-(users:%s)-[:DESTINATION]->%s return users" %(a,label,b)
+#   data = graph.cypher.execute(query)
+#   return parseTableData(data)
 
-# create node:Passenger with 
-def createPassenger( origin, destination, id):
-  passenger = graph.merge_one("Passenger", "id", id)
-  graph.create_unique(Relationship(passenger, "ORIGIN", createWaypoint(origin) ))
-  graph.create_unique(Relationship(passenger, "DESTINATION", createWaypoint(destination) ))
+# def findDrivers( origin, destination ):
+#   return findNodes("Driver", origin, destination)
 
-#return all nodes with same origin and destination 
-#origin and destination are arrays [lat,long]
-def findNodes( label, origin, destination ):
-  a = "(origin {coordinates : %s})" % origin
-  b = "(destination {coordinates: %s})" % destination
-  query = "MATCH %s <-[:ORIGIN]-(passengers:%s)-[:DESTINATION]->%s return passengers" %(a,label,b)
-  data = graph.cypher.execute(query)
-  return parseTableData(data)
+# def findPassengers ( origin, destination ):
+#   return findNodes("Passenger", origin, destination) 
 
-def findDrivers( origin, destination ):
-  return findNodes("Driver", origin, destination)
+# def pickDriver(passengerID, driverID):
+#   a = graph.merge_one("Passenger","id",passengerID)
+#   b = graph.merge_one("Driver","id",driverID)
+#   graph.create_unique(Relationship(a,"PICKS",b))
 
-def findPassengers ( origin, destination ):
-  return findNodes("Passenger", origin, destination)
+# def pickPassenger(driverID, passengerID):
+#   a = graph.merge_one("Driver","id",driverID)
+#   b = graph.merge_one("Passenger","id",passengerID)
+#   graph.create_unique(Relationship(a,"PICKS",b))
 
-def pickDriver(passengerId, driverId):
-  a = graph.merge_one("Passenger","id",passengerId)
-  b = graph.merge_one("Driver","id",driverId)
-  graph.create_unique(Relationship(a,"PICKS",b))
+# '''
+#    | passengers              
+# ---+--------------------------
+#  1 | (n0:Driver {id:"Jon"})  
+#  2 | (n5:Driver {id:"Jimmy"})
+# '''
+# def parseTableData( data ):
+#   res = []
+#   # for i in range(0, len(data) + 1):
+#     # res.append(data[i][0]['id'])
+#   for record in data:
+#     res.append(record[0]['id'].encode("utf-8"))
+#   return res
 
-def pickPassenger(driverId, passengerId):
-  a = graph.merge_one("Driver","id",driverId)
-  b = graph.merge_one("Passenger","id",passengerId)
-  graph.create_unique(Relationship(a,"PICKS",b))
-  # query = "MATCH (a),(b) WHERE a.id = %s AND b.id = %s CREATE (a)-[r:PICKS]->(b) RETURN r" %(userAId, userBId)
-  # data = graph.cypher.execute(query)
-#
-'''
-   | passengers              
----+--------------------------
- 1 | (n0:Driver {id:"Jon"})  
- 2 | (n5:Driver {id:"Jimmy"})
-'''
-def parseTableData( data ):
-  res = []
-  # for i in range(0, len(data) + 1):
-    # res.append(data[i][0]['id'])
-  for record in data:
-    res.append(record[0]['id'].encode("utf-8"))
-  return res
-
-# origin = [10,12]
-# destination = [43,45]
-# createDriver([10,12], [43,45], "Jon")
-# createPassenger(origin, destination, "Adam")
-# createPassenger(origin, destination, "Tony")
-# print(findPassengers(origin, destination))
+# # origin = [10,12]
+# # destination = [43,45]
+# # createDriver([10,12], [43,45], "Jon")
+# # createPassenger(origin, destination, "Adam")
+# # createPassenger(origin, destination, "Tony")
+# # print(findPassengers(origin, destination))
