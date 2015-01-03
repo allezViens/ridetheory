@@ -2,10 +2,10 @@
 # import os.path
 
 # app.run()
-from flask import Flask, request, jsonify
-import json
-import requests
-import connect
+from flask import Flask, request, jsonify, redirect, url_for
+from flask.ext.sqlalchemy import SQLAlchemy
+import os
+from connect import *
 app = Flask(__name__, static_folder='client', static_url_path='')
 
 @app.route('/')

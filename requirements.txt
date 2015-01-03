@@ -18,5 +18,4 @@ python-dateutil==2.3
 requests==2.3.0
 six==1.8.0
 static3==0.5.1
-virtualenv==1.11.6
 wsgiref==0.1.2
