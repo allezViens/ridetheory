@@ -9,7 +9,7 @@
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/normalize.css/normalize.css" />
     <!-- endbower -->
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="content/style.css" />
   </head>
   <body>
 
@@ -23,15 +23,21 @@
   <!-- endbower -->
 
   <!-- core:js -->  
-  <script src="/app/core/core.module.js"></script>  
-  <script src="/app/app.js"></script>  
-  <script src="/app/core/config/config.js"></script>  
-  <script src="/app/core/controllers/Compose.controller.js"></script>  
-  <script src="/app/core/controllers/Driver.controller.js"></script>  
-  <script src="/app/core/controllers/Passenger.controller.js"></script>  
-  <script src="/app/core/tests/composeControllerTest.js"></script>  
-  <script src="/app/core/services/google/google.service.js"></script>  
+  <script src="app/app.module.js"></script>
+  <script src="app/core/core.module.js"></script>
+  <script src="app/core/config.js"></script>
+  <script src="app/core/user.js"></script>
+  <script src="app/core/googlemap.js"></script>
+  <script src="app/map/map.module.js"></script>
+  <script src="app/map/map.js"></script>
+  <script src="app/search/search.module.js"></script>
+  <script src="app/search/search.js"></script>
   <!-- endinject -->
+  
+  <script src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+
+  </body>
+</html> 
 
   </body>
 </html> 
