@@ -6,7 +6,7 @@
     .controller('Search', Search);
 
     /* ngInject */
-    function Search($http, $state, userService){ 
+    function Search($http, $state, userService, googlemap){ 
       var vm = this;
 
       vm.findCoordinates = findCoordinates;      
@@ -54,7 +54,7 @@
             type: 'create'
           })
         }).success(function (data) {
-          $state.go('Map')
+          googlemap.setOriginDestination(vm.user.originCoordinates,vm.user.destinationCoordinates);
         }).error(function(data, status){
           $state.go(redirect);
         });     

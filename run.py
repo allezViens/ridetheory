@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify
 import json
 import requests
 import connect
-app = Flask(__name__, static_folder='client', static_url_path='')
+app = Flask(__name__, static_folder='build', static_url_path='')
 
 @app.route('/')
 def root():

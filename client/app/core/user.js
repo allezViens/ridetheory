@@ -5,7 +5,7 @@
     .factory('userService', userService);
 
   /* ngInject */
-  function userService($http) {
+  function userService() {
 
     var user = {};
 

@@ -2,16 +2,15 @@
 
   angular
     .module('app.core')
-    .factory('dataService', dataService);
+    .factory('dataservice', dataservice);
 
-  // dataService.$inject = ['$http','$q'];
-
-  function dataService() {
-
+  function dataservice() {
     return {
-      getPassengers: getPassengers
+      getPassengers: getPassengers,
+      getClientLoc: getClientLoc
     }
 
+    // TODO get array of passengers available in map
     function getPassengers(origin,destination) {
       return [{
         coordinates: [37.774929,-122.419416],
@@ -31,8 +30,16 @@
       }];
     }
 
+    // TODO return IP address for 
+    function getClientLoc(){
+      return [37.774929,-122.419416];
+    }
+    
   }
 })();
+
+
+
 
 
 

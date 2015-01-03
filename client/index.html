@@ -6,38 +6,16 @@
     <title>allezviens</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/normalize.css/normalize.css" />
-    <!-- endbower -->
-    <link rel="stylesheet" href="content/style.css" />
+    <!-- inject:css -->
+    <!-- endinject -->
   </head>
   <body>
-
-    <div id="container" ui-view></div>
-   
-  <!-- bower:js -->
-  <script src="bower_components/jquery/dist/jquery.js"></script>
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-  <script src="bower_components/ng-Fx/dist/ngFx.js"></script>
-  <!-- endbower -->
-
-  <!-- core:js -->  
-  <script src="app/app.module.js"></script>
-  <script src="app/core/core.module.js"></script>
-  <script src="app/core/config.js"></script>
-  <script src="app/core/user.js"></script>
-  <script src="app/core/googlemap.js"></script>
-  <script src="app/map/map.module.js"></script>
-  <script src="app/map/map.js"></script>
-  <script src="app/search/search.module.js"></script>
-  <script src="app/search/search.js"></script>
-  <!-- endinject -->
-  
-  <script src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
-
-  </body>
-</html> 
-
+    <div id="container">
+      <div class="map" ui-view="map"></div> 
+      <div class="panel" ui-view="searchbox"></div> 
+    </div>
+  <!-- inject:js -->
+  <!-- endinject -->  
+  <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
   </body>
 </html> 

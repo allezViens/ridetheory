@@ -6,16 +6,14 @@
     .controller('Map', Map);
 
   /* ngInject */
-  function Map(googlemap,userService,dataService) {
+  function Map(googlemap,userService,dataservice) {
     var vm = this;
     vm.passengers = [];
 
     activate();
 
     function activate(){
-      vm.user = userService.getUser();
-      googlemap.createMap(vm.user.originCoordinates,vm.user.destinationCoordinates);
-      console.log(vm.passengers);
+      googlemap.createMap([37.774929,-122.419416]);
     }
   }
 })();
