@@ -2,10 +2,10 @@
 # import os.path
 
 # app.run()
-from flask import Flask, request, jsonify
-import json
-import requests
-import connect
+from flask import Flask, request, jsonify, redirect, url_for
+from flask.ext.sqlalchemy import SQLAlchemy
+import os
+from connect import *
 app = Flask(__name__, static_folder='client', static_url_path='')
 
 @app.route('/')
@@ -15,15 +15,10 @@ def root():
 @app.route('/driver', methods=['GET', 'POST'])
 def drivers():
 	if (request.method == 'GET'):
-		print 'get method'
-		origin = []
-		origin.append(float(request.args.get('oLat')))
-		origin.append(float(request.args.get('oLong')))
-		destination = []
-		destination.append(float(request.args.get('dLat')))
-		destination.append(float(request.args.get('dLong')))
-		print origin
-		print destination
+		oLat, oLong = float(request.args.get('oLat')), float(request.args.get('oLong'))
+		origin = [oLat, oLong]
+		dLat, dLong = float(request.args.get('dLat')), float(request.args.get('dLong'))
+		destination = [dLat, dLong]
 		results = connect.findDrivers(origin, destination)
 		print 'after results'
 		print results
@@ -32,15 +27,10 @@ def drivers():
 		if (request.headers['Content-Type'][:16] == 'application/json'):
 			data = json.loads(request.data)
 			if (data['type'] == 'create'):
-				origin = []
-				origin.append(float(data['origin'][0]))
-				origin.append(float(data['origin'][1]))
-				destination = []
-				destination.append(float(data['destination'][0]))
-				destination.append(float(data['destination'][1]))
-				print(origin,destination)
-				print(data['id'])
-				print(origin,destination)
+				oLat, oLong = float(data['origin'][0]), float(data['origin'][1])
+				origin = [oLat, oLong]
+				dLat, dLong = float(data['destination'][0]), float(data['destination'][1])
+				destination = [dLat, dLong]
 				connect.createDriver(origin, destination, data['id'])
 				return 'Driver added to database'
 			if (data['type'] == 'pick'):
@@ -50,14 +40,10 @@ def drivers():
 @app.route('/passenger', methods=['GET', 'POST'])
 def passengers():
 	if (request.method == 'GET'):
-		origin = []
-		origin.append(float(request.args.get('oLat')))
-		origin.append(float(request.args.get('oLong')))
-		destination = []
-		destination.append(float(request.args.get('dLat')))
-		destination.append(float(request.args.get('dLong')))
-		print origin
-		print destination
+		oLat, oLong = float(request.args.get('oLat')), float(request.args.get('oLong'))
+		origin = [oLat, oLong]
+		dLat, dLong = float(request.args.get('dLat')), float(request.args.get('dLong'))
+		destination = [dLat, dLong]
 		results = connect.findPassengers(origin, destination)
 		print 'after results'
 		print results
@@ -66,12 +52,10 @@ def passengers():
 		if (request.headers['Content-Type'][:16] == 'application/json'):
 			data = json.loads(request.data)
 			if (data['type'] == 'create'):
-				origin = []
-				origin.append(float(data['origin'][0]))
-				origin.append(float(data['origin'][1]))
-				destination = []
-				destination.append(float(data['destination'][0]))
-				destination.append(float(data['destination'][1]))
+				oLat, oLong = float(data['origin'][0]), float(data['origin'][1])
+				origin = [oLat, oLong]
+				dLat, dLong = float(data['destination'][0]), float(data['destination'][1])
+				destination = [dLat, dLong]
 				connect.createPassenger(origin, destination, data['id'])
 				return 'Passenger added to database'
 			if (data['type'] == 'pick'):

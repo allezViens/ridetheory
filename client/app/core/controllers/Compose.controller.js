@@ -12,7 +12,6 @@
       vm.findCoordinates = findCoordinates;      
       vm.find = createUser;
       vm.getUser = getUser;
-
       // once user has hit submit, its a chain of events that get user info and populates lat/long before posting data to server
       function getUser (user) {
         //start animation
@@ -23,7 +22,6 @@
           });
         });
       }
-
 
       // gets all form data from compose.html
       var createUser = function (user) {
@@ -54,7 +52,7 @@
 
         $http({
           method: 'POST',
-          url: '/' + redirect ,
+          url: '/' + redirect,
           data: JSON.stringify({
             id: vm.user.id,
             origin: vm.user.originCoordinates,

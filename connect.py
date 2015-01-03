@@ -1,92 +1,99 @@
-from py2neo import Graph, watch, Node, Relationship, Path, ServiceRoot
-import os
+from models import *
+from run import db
 
-#watch requests to db-server
-watch("httpstream")
+'''DATABASE INSERTION'''
+#Adds driver to database
+def addDriver(id, oLat, oLong, dLat, dLong):
+	driver = Driver(id, oLat, oLong, dLat, dLong)
+	db.session.add(driver)
+	save()
 
-#This is for using localhost 
-#graph = Graph()
+#Adds passenger to database
+def addPassenger(id, oLat, oLong, dLat, dLong):
+	passenger = Passenger(id, oLat, oLong, dLat, dLong)
+	db.session.add(passenger)
+	save()
 
-# This is for using graphenedb on heroku and azure on local machine
-graphenedb_url = os.environ.get("GRAPHENEDB_URL", "http://neo4j-av.cloudapp.net:7474/");
-graph = ServiceRoot(graphenedb_url).graph
+#TODO: Adds driver-passenger pick to table
+def pickDriver(driverID, passengerID):
+	driver = getDriver(driverID)
+	passenger = getPassenger(passengerID)
+	driver.pick(passenger)
+	save()
 
-#This is for connecting to local host for testing
-# graph = ServiceRoot("http://localhost:7474/").graph
+#TODO: Adds passenger-driver pick to table
+def pickPassenger(passengerID, driverID):
+	passenger = getPassenger(passengerID)
+	driver = getDriver(driverID)
+	passenger.pick(driver)
+	save()
 
-#This is for connecting to azure always
-# graph = ServiceRoot("http://neo4j-av.cloudapp.net:7474/").graph
+#TODO: Adds bi-directional matches (join table)
+def addMatch(driverID, passengerID):
+	save()
+	return '' 
 
+'''DATABASE GET'''
+#TODO: Retrieve driver instance by ID
+def getDriver(driverID):
+	return Driver.query.filter_by(id=driverID).one()
 
-def createWaypoint( coordinates ):
-  return graph.merge_one("Waypoint", "coordinates", coordinates)
+#TODO: Retrieve passenger instance by ID
+def getPassenger(passengerID):
+	return Passenger.query.filter_by(id=passengerID).one()
 
-#origin and destination are dictionaries 
-def createDriver( origin, destination, id ):
-  driver = graph.merge_one("Driver", "id", id)
-  graph.create_unique(Relationship(driver, "ORIGIN", createWaypoint(origin) ))
-  graph.create_unique(Relationship(driver, "DESTINATION", createWaypoint(destination) ))
+#TODO: Returns all drivers that contain passenger route
+#PARAMS: Passenger's origin and destination coordinates
+def findDriversByLoc(oLat, oLong, dLat, dLong):
+	drivers = Driver.query().all()
+	res = []
+	for i in range(drivers):
+		minLat, maxLat = min(drivers[i].oLat, drivers[i].dLat), max(drivers[i].oLat, drivers[i].dLat)
+		minLong, maxLong = min(drivers[i].oLong, drivers[i].dLong), max(drivers[i].oLong, drivers[i].dLong)
+		if (minLat <= oLat <= maxLat and minLat <= dLat <= maxLat):
+			if (minLong <= oLong <= maxLong and minLong <= dLong <= maxLong):
+				res.append(drivers[i])
+	return res
 
-# create node:Passenger with 
-def createPassenger( origin, destination, id):
-  passenger = graph.merge_one("Passenger", "id", id)
-  graph.create_unique(Relationship(passenger, "ORIGIN", createWaypoint(origin) ))
-  graph.create_unique(Relationship(passenger, "DESTINATION", createWaypoint(destination) ))
+#TODO: Returns all passengers within given bound box
+#PARAMS: Driver's origin and destination coordinates
+def findPassengersByLoc(oLat, oLong, dLat, dLong):
+	minLat, maxLat = min(oLat, dLat), max(oLat, dLat)
+	minLong, maxLong = min(oLong, dLong), max(oLong, dLong)
+	passengers = Passenger.query.filter(Passenger.oLat >= minLat, Passenger.oLat <= maxLat,
+		Passenger.dLat >= minLat, Passenger.dLat <= maxLat,
+		Passenger.oLong >= minLong, Passenger.oLong <= maxLong,
+		Passenger.dLong >= minLong, Passenger.dLong <= maxLong)
+	return passengers
 
-#return all nodes with same origin and destination 
-#origin and destination are arrays [lat,long]
-def findNodes( label, origin, destination ):
-  print 'in find nodes'
-  a = "(origin {coordinates : %s})" % origin
-  b = "(destination {coordinates: %s})" % destination
-  query = "MATCH %s <-[:ORIGIN]-(passengers:%s)-[:DESTINATION]->%s return passengers" %(a,label,b)
-  print 'query'
-  print query
-  data = graph.cypher.execute(query)
-  print 'data'
-  print data
-  print 'after data'
-  return parseTableData(data)
+#TODO: Returns all picks by given driver
+def findDriverPicks(driverID):
+	return getDriver(driverID).picks
 
-def findDrivers( origin, destination ):
-  print 'in find drivers'
-  return findNodes("Driver", origin, destination)
+#TODO: Returns all picks by given driver
+def findPassengerPicks(passengerID):
+	return getPassenger(passengerID).picks
 
+'''DATABASE DELETION'''
+#TODO: Deletes driver + route from database
+def deleteDriver(id):
+	save()
+	return ''
 
-def findPassengers ( origin, destination ):
-  return findNodes("Passenger", origin, destination)
+#TODO: Deletes passenger + route from database
+def deletePassenger(id):
+	save()
+	return ''
 
-def pickDriver(passengerId, driverId):
-  a = graph.merge_one("Passenger","id",passengerId)
-  b = graph.merge_one("Driver","id",driverId)
-  graph.create_unique(Relationship(a,"PICKS",b))
+#TODO: Delete driver's picks from table
+def deleteDriverPicks(driverID):
+	save()
+	return ''
 
-def pickPassenger(driverId, passengerId):
-  a = graph.merge_one("Driver","id",driverId)
-  b = graph.merge_one("Passenger","id",passengerId)
-  graph.create_unique(Relationship(a,"PICKS",b))
-  # query = "MATCH (a),(b) WHERE a.id = %s AND b.id = %s CREATE (a)-[r:PICKS]->(b) RETURN r" %(userAId, userBId)
-  # data = graph.cypher.execute(query)
-#
-'''
-   | passengers              
----+--------------------------
- 1 | (n0:Driver {id:"Jon"})  
- 2 | (n5:Driver {id:"Jimmy"})
-'''
-def parseTableData( data ):
-  print 'parseTableData'
-  print data
-  res = []
-  # for i in range(0, len(data) + 1):
-    # res.append(data[i][0]['id'])
-  for record in data:
-    res.append(record[0]['id'].encode("utf-8"))
-  return res
+#TODO: Delete passenger's picks from table
+def deletePassengerPicks(passengerID):
+	save()
+	return ''
 
-# origin = [10,12]
-# destination = [43,45]
-# createDriver([10,12], [43,45], "Jon")
-# createPassenger(origin, destination, "Adam")
-# createPassenger(origin, destination, "Tony")
-# print(findPassengers(origin, destination))
+def save():
+	db.session.commit()
