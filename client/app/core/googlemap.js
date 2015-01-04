@@ -18,7 +18,7 @@
       var markers = [];
       angular.forEach(array,function(item) {
         markers.push(new google.maps.Marker({
-          position: createCoordinates(item.coordinates), // needs a google.maps.LatLng
+          position: convertCoordinate(item.coordinates), // needs a google.maps.LatLng
           title: item.title,
         }));
       });

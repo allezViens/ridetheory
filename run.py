@@ -5,13 +5,18 @@
 from flask import Flask, request, jsonify, redirect, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
-import connect 
+
 import json
 import sys
 
 app = Flask(__name__, static_folder='client', static_url_path='')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/allezviens'
+
+alchemyuri = os.environ["DATABASE_URL"];
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["DATABASE_URL"]
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/allezviens'
 db = SQLAlchemy(app)
+
+import connect 
 
 @app.route('/')
 def root():
