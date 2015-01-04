@@ -11,16 +11,28 @@ var paths = {
   bower : "./client/bower_components/",
   index : "./client/index.html",
   client : "./client/",
-  sass: "./client/sass/style.scss",
-  core: "./client/app/core/**/*.js",
-  app: "./client/app/app.js"
+  sass: "./client/conent/sass/style.scss",
+  app: "./client/app/app.module.js",
+  angular: ["./client/app/app.module.js","./client/app/**/*module*.js","./client/app/**/*.js",]
 }
+
+var ngAnnotate = require('gulp-ng-annotate'),
+    uglify = require('gulp-uglify'),
+    concat = require('gulp-concat');
+gulp.task('ng-annotate',function(){
+  return gulp
+    .src(paths.angular)
+    .pipe(ngAnnotate({add: true, single_quotes:true}))
+    .pipe(uglify({mangle:true}))
+    .pipe(gulp.dest('./build'))
+})
 
 // Compile all .scss files ----> styles.css
 gulp.task('sass', function () {
-    gulp.src(paths.sass)
-        .pipe(sass())
-        .pipe(gulp.dest(paths.client));
+    return gulp
+      .src(paths.sass)
+      .pipe(sass())
+      .pipe(gulp.dest(paths.client));
 });
 
 // Inject all bower dependencies listed in bower.json ---> index.html
@@ -33,19 +45,18 @@ gulp.task('bower', function () {
     .pipe(gulp.dest(paths.client));
 });
 
-gulp.task('core', function () {
-    var core = gulp.src( paths.core, {read:false} );
-    var app = gulp.src(paths.app, {read:false});
-    var options = { read:false, name: 'core', ignorePath: '/client' };  
+// gulp.task('core', function () {
+//     var app = gulp.src(paths.app, {read:false});
+//     var options = { read:false, name: 'core', ignorePath: '/client' };  
     
-    return gulp.src( paths.index )
-      .pipe( inject( es.merge( core, app ), options))
-      .pipe( gulp.dest( paths.client ) )
-})
+//     return gulp.src( paths.index )
+//       .pipe( inject( es.merge( app ), options))
+//       .pipe( gulp.dest( paths.client ) )
+// })
 
 
 gulp.task('watch', function() {
-  gulp.watch('./client/sass/*.scss', ['sass']);
+  gulp.watch('./client/conent/sass/*.scss', ['sass']);
 });
 
 gulp.task('karma', function (done) {
@@ -54,9 +65,5 @@ gulp.task('karma', function (done) {
   }, done);
 });
 
-gulp.task('default', function() {
-    runSequence('core', 'sass','bower','watch', 'karma', function () {
-      console.log('gulp success!')
-    });
-});
+gulp.task('default', ['core', 'sass','bower','watch']);
 

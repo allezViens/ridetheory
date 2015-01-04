@@ -1,4 +1,7 @@
 .compose {
+  max-width: 50rem;
+  margin: 0 auto;
+
   h1 {
     @include fontlight;
     text-align: center;
