@@ -10,6 +10,7 @@
       var vm = this;
 
       vm.findCoordinates = findCoordinates;      
+
       vm.submitUser = submitUser;
 
       // once user has hit submit, its a chain of events that get user info and populates lat/long before posting data to server
@@ -46,7 +47,7 @@
 
         $http({
           method: 'POST',
-          url: '/' + redirect ,
+          url: '/' + redirect,
           data: JSON.stringify({
             id: vm.user.id,
             origin: vm.user.originCoordinates,

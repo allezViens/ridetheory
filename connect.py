@@ -1,76 +1,132 @@
-from py2neo import Graph, watch, Node, Relationship, Path, ServiceRoot
-import os
+from models import *
+from run import db
+import sys
 
-#watch requests to db-server
-# watch("httpstream")
+'''DATABASE INSERTION'''
+#Adds driver to database
+def addDriver(id, oLat, oLong, dLat, dLong):
+	driver = Driver(id, oLat, oLong, dLat, dLong)
+	db.session.add(driver)
+	save()
 
-# connect to localhost:7474
+#Adds passenger to database
+def addPassenger(id, oLat, oLong, dLat, dLong):
+	passenger = Passenger(id, oLat, oLong, dLat, dLong)
+	db.session.add(passenger)
+	save()
 
-#graph = Graph()
+#TODO: Adds driver-passenger pick to table
+def pickDriver(driverID, passengerID):
+  driver = getDriver(driverID)
+  passenger = getPassenger(passengerID)
+  passenger.pick(driver) 
+  save()
 
-graphenedb_url = os.environ.get("GRAPHENEDB_URL", "http://localhost:7474/");
-graph = ServiceRoot(graphenedb_url).graph
+#TODO: Adds passenger-driver pick to table
+def pickPassenger(passengerID, driverID):
+  passenger = getPassenger(passengerID)
+  driver = getDriver(driverID)
+  driver.pick(passenger)
+  save()
 
-def createWaypoint( coordinates ):
-  return graph.merge_one("Waypoint", "coordinates", coordinates)
+#TODO: Adds bi-directional matches (join table)
+def addMatch(driverID, passengerID):
+	save()
+	return '' 
 
-#origin and destination are dictionaries 
-def createDriver( origin, destination, id ):
-  driver = graph.merge_one("Driver", "id", id)
-  graph.create_unique(Relationship(driver, "ORIGIN", createWaypoint(origin) ))
-  graph.create_unique(Relationship(driver, "DESTINATION", createWaypoint(destination) ))
+'''DATABASE GET'''
+#TODO: Retrieve driver instance by ID
+def getDriver(driverID):
+  print 'in get driver'
+  print driverID
+  return Driver.query.filter_by(name=driverID).one()
+  #return Driver.query.filter_by(id=driverID).one()
 
-# create node:Passenger with 
-def createPassenger( origin, destination, id):
-  passenger = graph.merge_one("Passenger", "id", id)
-  graph.create_unique(Relationship(passenger, "ORIGIN", createWaypoint(origin) ))
-  graph.create_unique(Relationship(passenger, "DESTINATION", createWaypoint(destination) ))
+#TODO: Retrieve passenger instance by ID
+def getPassenger(passengerID):
+	return Passenger.query.filter_by(name=passengerID).one()
 
-#return all nodes with same origin and destination 
-#origin and destination are arrays [lat,long]
-def findNodes( label, origin, destination ):
-  a = "(origin {coordinates : %s})" % origin
-  b = "(destination {coordinates: %s})" % destination
-  query = "MATCH %s <-[:ORIGIN]-(passengers:%s)-[:DESTINATION]->%s return passengers" %(a,label,b)
-  data = graph.cypher.execute(query)
-  return parseTableData(data)
-
-def findDrivers( origin, destination ):
-  return findNodes("Driver", origin, destination)
-  print('tg')
-
-def findPassengers ( origin, destination ):
-  return findNodes("Passenger", origin, destination)
-
-def pickDriver(passengerId, driverId):
-  a = graph.merge_one("Passenger","id",passengerId)
-  b = graph.merge_one("Driver","id",driverId)
-  graph.create_unique(Relationship(a,"PICKS",b))
-
-def pickPassenger(driverId, passengerId):
-  a = graph.merge_one("Driver","id",driverId)
-  b = graph.merge_one("Passenger","id",passengerId)
-  graph.create_unique(Relationship(a,"PICKS",b))
-  # query = "MATCH (a),(b) WHERE a.id = %s AND b.id = %s CREATE (a)-[r:PICKS]->(b) RETURN r" %(userAId, userBId)
-  # data = graph.cypher.execute(query)
-#
-'''
-   | passengers              
----+--------------------------
- 1 | (n0:Driver {id:"Jon"})  
- 2 | (n5:Driver {id:"Jimmy"})
-'''
-def parseTableData( data ):
+#TODO: Returns all drivers that contain passenger route
+#PARAMS: Passenger's origin and destination coordinates
+def findDriversByLoc(oLat, oLong, dLat, dLong):
+  print 'in find Drivers by Location'
+  drivers = Driver.query.all()
+  print drivers
   res = []
-  # for i in range(0, len(data) + 1):
-    # res.append(data[i][0]['id'])
-  for record in data:
-    res.append(record[0]['id'].encode("utf-8"))
+  for i in range(len(drivers)):
+    print drivers[i]
+    minLat, maxLat = min(drivers[i].oLat, drivers[i].dLat), max(drivers[i].oLat, drivers[i].dLat)
+    minLong, maxLong = min(drivers[i].oLon, drivers[i].dLon), max(drivers[i].oLon, drivers[i].dLon)
+    if (minLat <= oLat <= maxLat and minLat <= dLat <= maxLat):
+      if (minLong <= oLong <= maxLong and minLong <= dLong <= maxLong):
+        res.append(drivers[i])
+  print res
+  return formatResults(res)
+
+#TODO: Returns all passengers within given bound box
+#PARAMS: Driver's origin and destination coordinates
+def findPassengersByLoc(oLat, oLong, dLat, dLong):
+  minLat, maxLat = min(oLat, dLat), max(oLat, dLat)
+  minLong, maxLong = min(oLong, dLong), max(oLong, dLong)
+  passengers = Passenger.query.filter(Passenger.oLat >= minLat, Passenger.oLat <= maxLat,
+		Passenger.dLat >= minLat, Passenger.dLat <= maxLat,
+		Passenger.oLon >= minLong, Passenger.oLon <= maxLong,
+		Passenger.dLon >= minLong, Passenger.dLon <= maxLong).all()
+  return formatResults(passengers)
+
+#TODO: Returns all picks by given driver
+def findDriverPicks(driverID):
+	return getDriver(driverID).picks
+
+#TODO: Returns all picks by given driver
+def findPassengerPicks(passengerID):
+	return getPassenger(passengerID).picks
+
+'''DATABASE DELETION'''
+#TODO: Deletes driver + route from database
+def deleteDriver(id):
+	save()
+	return ''
+
+#TODO: Deletes passenger + route from database
+def deletePassenger(id):
+	save()
+	return ''
+
+#TODO: Delete driver's picks from table
+def deleteDriverPicks(driverID):
+	save()
+	return ''
+
+#TODO: Delete passenger's picks from table
+def deletePassengerPicks(passengerID):
+	save()
+	return ''
+
+def save():
+  print 'save function'
+  for obj in db.session:
+    print obj
+  try:
+    db.session.commit()
+  except:
+    e = sys.exc_info()[0]
+    print e
+    print 'Error in session D:'
+  finally:
+    print 'after db.session.commit()'
+
+def formatResults(modelArray):
+  res = []
+  for i in range(len(modelArray)):
+    res.append(objectify(modelArray[i]))
   return res
 
-# origin = [10,12]
-# destination = [43,45]
-# createDriver([10,12], [43,45], "Jon")
-# createPassenger(origin, destination, "Adam")
-# createPassenger(origin, destination, "Tony")
-# print(findPassengers(origin, destination))
+def objectify(model):
+  obj = {
+    "id": model.name,
+    "origin": [float(model.oLat), float(model.oLon)],
+    "destination": [float(model.dLat), float(model.dLon)]
+  }
+  return obj
+

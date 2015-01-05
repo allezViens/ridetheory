@@ -1,5 +1,8 @@
 #ignore /bower_components
 /client/bower_components
+/node_modules
+npm-debug.log
 /.DS_Store
 connect.pyc
 run.pyc
+*.pyc
