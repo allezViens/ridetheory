@@ -1,6 +1,7 @@
 from models import *
 from run import db
 import sys
+import math
 
 '''DATABASE INSERTION/UPDATE'''
 #Adds driver to database
@@ -68,11 +69,14 @@ def findMatchableDrivers(oLat, oLon, dLat, dLon, date):
 def findMatchablePassengers(oLat, oLon, dLat, dLon, date):
   minLat, maxLat = min(oLat, dLat), max(oLat, dLat)
   minLon, maxLon = min(oLon, dLon), max(oLon, dLon)
+  maxLat, minLon = makeBuffer(maxLat,minLon, 5, "NW") 
+  minLat, maxLon = makeBuffer(minLat,maxLon, 5, "SE")
   passengers = Passenger.query.filter(Passenger.date == date,
     Passenger.oLat >= minLat, Passenger.oLat <= maxLat,
     Passenger.dLat >= minLat, Passenger.dLat <= maxLat,
     Passenger.oLon >= minLon, Passenger.oLon <= maxLon,
     Passenger.dLon >= minLon, Passenger.dLon <= maxLon).all()
+  minLong, maxLong = min(oLong, dLong), max(oLong, dLong)
   return formatResults(passengers)
 
 #Returns all picks by given driver
@@ -134,4 +138,27 @@ def objectify(model):
     "destination": [float(model.dLat), float(model.dLon)]
   }
   return obj
+
+def makebuffer(lat,lon,miles,direction):
+  #This earth radius in miles may not be entirely accurate - there are various numbers and the earth is not a perfect sphere
+  #for the case of a buffer though, probably doesn't really matter
+  earthRadiusMiles = 3959
+  northwest = math.radians(315)
+  southeast = math.radians(135)
+  lat = math.radians(lat)
+  lon = math.radians(lon)
+
+  #cast as float or this breaks, because angular direction is a tiny tiny number 
+  angularDirection = float(miles)/float(earthRadiusMiles)
+  print angularDirection
+  if(direction=="NW"):
+    bearing = northwest
+  if(direction=="SE"):
+    bearing = southeast
+
+  newLat = math.asin(math.sin(lat)*math.cos(angularDirection)) + math.cos(lat)*math.sin(angularDirection)*math.cos(bearing)
+  newLon = lon + math.atan2(math.sin(bearing)*math.sin(angularDirection)*math.cos(lat), math.cos(angularDirection)-math.sin(lat)*math.sin(newLat))
+  
+  return math.degrees(newLat), math.degrees(newLon)
+
 
