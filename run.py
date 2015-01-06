@@ -12,10 +12,12 @@ import sys
 app = Flask(__name__, static_folder='client', static_url_path='')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["DATABASE_URL"]
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/allezviens'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/allezviens'
 db = SQLAlchemy(app)
 
-import connect 
+from connect import *
+db.create_all()
+
 
 @app.route('/')
 def root():
@@ -27,7 +29,7 @@ def drivers():
 		oLat, oLon = float(request.args.get('oLat')), float(request.args.get('oLon'))
 		dLat, dLon = float(request.args.get('dLat')), float(request.args.get('dLon'))
 		date = request.args.get('date')
-		results = connect.findMatchablePassengers(oLat, oLon, dLat, dLon, date)
+		results = findMatchablePassengers(oLat, oLon, dLat, dLon, date)
 		return jsonify(matches=results)
 	if (request.method == 'POST'):
 		if (request.headers['Content-Type'][:16] == 'application/json'):
@@ -35,11 +37,11 @@ def drivers():
 			if (data['type'] == 'create'):
 				oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
 				dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
-				connect.addDriver(data['id'], oLat, oLon, dLat, dLon, '2015-01-05')
-				# connect.addDriver(data['id'], oLat, oLon, dLat, dLon, data['date'])
+				addDriver(data['id'], oLat, oLon, dLat, dLon, '2015-01-05')
+				# addDriver(data['id'], oLat, oLon, dLat, dLon, data['date'])
 				return 'Driver added to database'
 			if (data['type'] == 'pick'):
-				connect.pickPassenger(data['passengerID'],data['driverID'])
+				pickPassenger(data['passengerID'],data['driverID'])
 				return 'Successful pick'
 
 @app.route('/passenger', methods=['GET', 'POST'])
@@ -48,7 +50,7 @@ def passengers():
 		oLat, oLon = float(request.args.get('oLat')), float(request.args.get('oLon'))
 		dLat, dLon = float(request.args.get('dLat')), float(request.args.get('dLon'))
 		date = request.args.get('date')
-		results = connect.findMatchableDrivers(oLat, oLon, dLat, dLon, date)
+		results = findMatchableDrivers(oLat, oLon, dLat, dLon, date)
 		return jsonify(matches=results)
 	if (request.method == 'POST'):
 		if (request.headers['Content-Type'][:16] == 'application/json'):
@@ -56,11 +58,11 @@ def passengers():
 			if (data['type'] == 'create'):
 				oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
 				dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
-				connect.addPassenger(data['id'], oLat, oLon, dLat, dLon, '2015-01-05')
-				# connect.addPassenger(data['id'], oLat, oLon, dLat, dLon, data['date'])
+				addPassenger(data['id'], oLat, oLon, dLat, dLon, '2015-01-05')
+				# addPassenger(data['id'], oLat, oLon, dLat, dLon, data['date'])
 				return 'Passenger added to database'
 			if (data['type'] == 'pick'):
-				connect.pickDriver(data['driverID'],data['passengerID'])
+				pickDriver(data['driverID'],data['passengerID'])
 				return 'Successful pick'
 
 if (__name__ == '__main__'):
