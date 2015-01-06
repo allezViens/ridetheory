@@ -24,8 +24,8 @@
 ## Requirements
 
 - Python 2.7.x
-- Neo4j 2.1.x
-- Django 1.7.x
+- psycopg 2.5.x
+- Flask 0.10.x
 - Angular 1.3.x
 - etc
 

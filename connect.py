@@ -2,96 +2,101 @@ from models import *
 from run import db
 import sys
 
-'''DATABASE INSERTION'''
+'''DATABASE INSERTION/UPDATE'''
 #Adds driver to database
-def addDriver(id, oLat, oLong, dLat, dLong):
-	driver = Driver(id, oLat, oLong, dLat, dLong)
+def addDriver(id, oLat, oLon, dLat, dLon, date):
+	driver = Driver(id, oLat, oLon, dLat, dLon, date)
 	db.session.add(driver)
 	save()
 
 #Adds passenger to database
-def addPassenger(id, oLat, oLong, dLat, dLong):
-	passenger = Passenger(id, oLat, oLong, dLat, dLong)
-	db.session.add(passenger)
-	save()
+def addPassenger(id, oLat, oLon, dLat, dLon, date):
+  passenger = Passenger(id, oLat, oLon, dLat, dLon, date)
+  db.session.add(passenger)
+  save()
 
-#TODO: Adds driver-passenger pick to table
+#Adds driver-passenger pick to table
 def pickDriver(driverID, passengerID):
   driver = getDriver(driverID)
   passenger = getPassenger(passengerID)
   passenger.pick(driver) 
   save()
 
-#TODO: Adds passenger-driver pick to table
+#Adds passenger-driver pick to table
 def pickPassenger(passengerID, driverID):
   passenger = getPassenger(passengerID)
   driver = getDriver(driverID)
   driver.pick(passenger)
   save()
 
-#TODO: Adds bi-directional matches (join table)
-def addMatch(driverID, passengerID):
-	save()
-	return '' 
+#Validates users
+def validateDriver(driverID):
+  driver = getDriver(driverID)
+  driver.validateDriver()
+  save()
+
+def validatePassenger(passengerID):
+  passenger = getPassenger(passengerID)
+  passenger.validatePassenger()
+  save()
 
 '''DATABASE GET'''
 #TODO: Retrieve driver instance by ID
 def getDriver(driverID):
-  print 'in get driver'
-  print driverID
   return Driver.query.filter_by(name=driverID).one()
   #return Driver.query.filter_by(id=driverID).one()
 
 #TODO: Retrieve passenger instance by ID
 def getPassenger(passengerID):
-	return Passenger.query.filter_by(name=passengerID).one()
+  return Passenger.query.filter_by(name=passengerID).one()
 
-#TODO: Returns all drivers that contain passenger route
+#Returns all drivers that contain passenger route and same date
 #PARAMS: Passenger's origin and destination coordinates
-def findDriversByLoc(oLat, oLong, dLat, dLong):
-  print 'in find Drivers by Location'
-  drivers = Driver.query.all()
-  print drivers
+def findMatchableDrivers(oLat, oLon, dLat, dLon, date):
+  drivers = Driver.query.filter(Driver.date == date).all()
   res = []
   for i in range(len(drivers)):
-    print drivers[i]
     minLat, maxLat = min(drivers[i].oLat, drivers[i].dLat), max(drivers[i].oLat, drivers[i].dLat)
-    minLong, maxLong = min(drivers[i].oLon, drivers[i].dLon), max(drivers[i].oLon, drivers[i].dLon)
+    minLon, maxLon = min(drivers[i].oLon, drivers[i].dLon), max(drivers[i].oLon, drivers[i].dLon)
     if (minLat <= oLat <= maxLat and minLat <= dLat <= maxLat):
-      if (minLong <= oLong <= maxLong and minLong <= dLong <= maxLong):
+      if (minLon <= oLon <= maxLon and minLon <= dLon <= maxLon):
         res.append(drivers[i])
-  print res
   return formatResults(res)
 
-#TODO: Returns all passengers within given bound box
+#Returns all passengers within given bound box and same date
 #PARAMS: Driver's origin and destination coordinates
-def findPassengersByLoc(oLat, oLong, dLat, dLong):
+def findMatchablePassengers(oLat, oLon, dLat, dLon, date):
   minLat, maxLat = min(oLat, dLat), max(oLat, dLat)
-  minLong, maxLong = min(oLong, dLong), max(oLong, dLong)
-  passengers = Passenger.query.filter(Passenger.oLat >= minLat, Passenger.oLat <= maxLat,
-		Passenger.dLat >= minLat, Passenger.dLat <= maxLat,
-		Passenger.oLon >= minLong, Passenger.oLon <= maxLong,
-		Passenger.dLon >= minLong, Passenger.dLon <= maxLong).all()
+  minLon, maxLon = min(oLon, dLon), max(oLon, dLon)
+  passengers = Passenger.query.filter(Passenger.date == date,
+    Passenger.oLat >= minLat, Passenger.oLat <= maxLat,
+    Passenger.dLat >= minLat, Passenger.dLat <= maxLat,
+    Passenger.oLon >= minLon, Passenger.oLon <= maxLon,
+    Passenger.dLon >= minLon, Passenger.dLon <= maxLon).all()
   return formatResults(passengers)
 
-#TODO: Returns all picks by given driver
+#Returns all picks by given driver
 def findDriverPicks(driverID):
-	return getDriver(driverID).picks
+  return getDriver(driverID).picks
 
-#TODO: Returns all picks by given driver
+#Returns all picks by given driver
 def findPassengerPicks(passengerID):
-	return getPassenger(passengerID).picks
+  return getPassenger(passengerID).picks
+
+#TODO: Checks if both driver and passenger have picked each other
+def isReciprocal(driverID, passengerID):
+	return '' 
 
 '''DATABASE DELETION'''
 #TODO: Deletes driver + route from database
 def deleteDriver(id):
-	save()
-	return ''
+  save()
+  return ''
 
 #TODO: Deletes passenger + route from database
 def deletePassenger(id):
-	save()
-	return ''
+  save()
+  return ''
 
 #TODO: Delete driver's picks from table
 def deleteDriverPicks(driverID):
