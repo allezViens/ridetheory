@@ -1,7 +1,3 @@
-# from flask import Flask, request
-# import os.path
-
-# app.run()
 from flask import Flask, request, jsonify, redirect, url_for
 from flask.ext.mail import Mail
 from flask.ext.sqlalchemy import SQLAlchemy
