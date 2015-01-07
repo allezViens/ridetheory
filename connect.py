@@ -76,7 +76,6 @@ def findMatchablePassengers(oLat, oLon, dLat, dLon, date):
     Passenger.dLat >= minLat, Passenger.dLat <= maxLat,
     Passenger.oLon >= minLon, Passenger.oLon <= maxLon,
     Passenger.dLon >= minLon, Passenger.dLon <= maxLon).all()
-  minLong, maxLong = min(oLong, dLong), max(oLong, dLong)
   return formatResults(passengers)
 
 #Returns all picks by given driver
@@ -133,13 +132,14 @@ def formatResults(modelArray):
 
 def objectify(model):
   obj = {
-    "id": model.name,
+    "id": model.email,
     "origin": [float(model.oLat), float(model.oLon)],
-    "destination": [float(model.dLat), float(model.dLon)]
+    "destination": [float(model.dLat), float(model.dLon)],
+    "date": model.date
   }
   return obj
 
-def makebuffer(lat,lon,miles,direction):
+def makeBuffer(lat,lon,miles,direction):
   #This earth radius in miles may not be entirely accurate - there are various numbers and the earth is not a perfect sphere
   #for the case of a buffer though, probably doesn't really matter
   earthRadiusMiles = 3959
