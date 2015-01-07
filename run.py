@@ -8,8 +8,9 @@ import sys
 app = Flask(__name__, static_folder='client', static_url_path='')
 mail = Mail(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["DATABASE_URL"]
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/allezviens'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",'postgresql://localhost/allezviens')
+db = SQLAlchemy(app)
 
 app.config.update(
 	#Comment out for production
@@ -71,6 +72,16 @@ def passengers():
 			if (data['type'] == 'pick'):
 				pickDriver(data['driverID'],data['passengerID'])
 				return 'Successful pick'
+
+@app.route('/trip/<urlID2>', methods=['GET'])
+def route(urlID2):
+	if (request.method == 'GET'):
+		type, info = getInfoByUrl(urlID2)
+		if(type == 'P'):
+		  return jsonify(passenger=info[0])
+		if(type == 'D'):
+		  return jsonify(driver=info[0])
+	
 
 if (__name__ == '__main__'):
     app.run()
