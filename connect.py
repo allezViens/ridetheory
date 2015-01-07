@@ -129,9 +129,10 @@ def formatResults(modelArray):
 
 def objectify(model):
   obj = {
-    "id": model.name,
+    "id": model.email,
     "origin": [float(model.oLat), float(model.oLon)],
-    "destination": [float(model.dLat), float(model.dLon)]
+    "destination": [float(model.dLat), float(model.dLon)],
+    "date": model.date
   }
   return obj
 
