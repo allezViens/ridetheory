@@ -24,7 +24,7 @@ class Driver(db.Model):
   date = db.Column(db.String)
   picks = db.relationship('Passenger', secondary ='driverPicks', backref = db.backref('pickedBy',lazy='dynamic'))
 
-  def __init__(self, email, oLat, oLon, dLat, dLon, date):
+  def __init__(self, email, oLat, oLon, dLat, dLon, date, url):
     self.email = email
     self.validated = False
     self.oLat = oLat
@@ -32,6 +32,7 @@ class Driver(db.Model):
     self.dLat = dLat
     self.dLon = dLon
     self.date = date
+    self.editURL = url
 
   def __repr__(self):
     return '<User %r>' % self.email
@@ -56,7 +57,7 @@ class Passenger(db.Model):
   date = db.Column(db.String)
   picks = db.relationship('Driver', secondary ='passengerPicks', backref = db.backref('pickedBy',lazy='dynamic'))
 
-  def __init__(self, email, oLat, oLon, dLat, dLon, date):
+  def __init__(self, email, oLat, oLon, dLat, dLon, date, url):
     self.email = email
     self.validated = False
     self.oLat = oLat
@@ -64,6 +65,7 @@ class Passenger(db.Model):
     self.dLat = dLat
     self.dLon = dLon
     self.date = date
+    self.editURL = url
 
   def __repr__(self):
     return '<User %r>' % self.email

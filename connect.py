@@ -2,17 +2,21 @@ from models import *
 from run import db
 import sys
 import math
+import hashlib
+import time
 
 '''DATABASE INSERTION/UPDATE'''
 #Adds driver to database
 def addDriver(id, oLat, oLon, dLat, dLon, date):
-	driver = Driver(id, oLat, oLon, dLat, dLon, date)
-	db.session.add(driver)
-	save()
+  url = makeURL(id)
+  driver = Driver(id, oLat, oLon, dLat, dLon, date, url)
+  db.session.add(driver)
+  save()
 
 #Adds passenger to database
 def addPassenger(id, oLat, oLon, dLat, dLon, date):
-  passenger = Passenger(id, oLat, oLon, dLat, dLon, date)
+  url = makeURL(id)
+  passenger = Passenger(id, oLat, oLon, dLat, dLon, date, url)
   db.session.add(passenger)
   save()
 
@@ -90,6 +94,33 @@ def findPassengerPicks(passengerID):
 def isReciprocal(driverID, passengerID):
 	return '' 
 
+def getInfoByUrl(url):
+  match = Driver.query.filter_by(editURL=url).all()
+  if(len(match)>0):
+    return 'D', formatResults(match)
+  match = Passenger.query.filter_by(editURL=url).all()
+  if(len(match)>0):
+    return 'P', formatResults(match)
+  return 'NA', False
+
+def urlExists(url):
+  type, info = getInfoByUrl(url)
+  if(type == 'NA'):
+    return False
+  return True
+
+def passengerUrlExists(url):
+  match = Passenger.query.filter_by(editURL=url).all()
+  if(len(match)>0):
+    return True
+  return False
+
+def driverUrlExists(url):
+  match = Driver.query.filter_by(editURL=url).all()
+  if(len(match)>0):
+    return True
+  return False
+
 '''DATABASE DELETION'''
 #TODO: Deletes driver + route from database
 def deleteDriver(id):
@@ -130,7 +161,7 @@ def formatResults(modelArray):
     res.append(objectify(modelArray[i]))
   return res
 
-def objectify(model):
+def objectify(model,addMatches):
   obj = {
     "id": model.email,
     "origin": [float(model.oLat), float(model.oLon)],
@@ -160,5 +191,15 @@ def makeBuffer(lat,lon,miles,direction):
   newLon = lon + math.atan2(math.sin(bearing)*math.sin(angularDirection)*math.cos(lat), math.cos(angularDirection)-math.sin(lat)*math.sin(newLat))
   
   return math.degrees(newLat), math.degrees(newLon)
+
+def makeURL(id):
+  id = id + time.strftime("%M%S")
+  hash = hashlib.md5(id).hexdigest()
+  url = hash[0:8]
+  while(driverUrlExists(url) or passengerUrlExists(url)):
+      id = id + time.strftime("%M%S")
+      hash = hashlib.md5(id).hexdigest()
+      url = hash[0:8]
+  return url
 
 
