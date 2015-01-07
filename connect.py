@@ -158,10 +158,12 @@ def save():
 def formatResults(modelArray):
   res = []
   for i in range(len(modelArray)):
+    print 'in for loop'
     res.append(objectify(modelArray[i]))
   return res
 
-def objectify(model,addMatches):
+def objectify(model):
+  print'objectify top'
   obj = {
     "id": model.email,
     "origin": [float(model.oLat), float(model.oLon)],
