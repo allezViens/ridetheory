@@ -161,7 +161,7 @@ def formatResults(modelArray):
     res.append(objectify(modelArray[i]))
   return res
 
-def objectify(model,addMatches):
+def objectify(model):
   obj = {
     "id": model.email,
     "origin": [float(model.oLat), float(model.oLon)],

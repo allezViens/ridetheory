@@ -6,67 +6,61 @@
 
   function dataservice($http) {
     var passengers = [];
+    var drivers = [];
 
     return {
       passengers: passengers,
       getPassengers: getPassengers,
       getClientLoc: getClientLoc,
-
     };
 
+    // expects origin and destination to be googlemap objects
+    function getPassengers(origin,destination, cb) {
+      return $http({
+            url: '/driver',
+            method: "GET",
+            params: {
+              oLat: origin.k,
+              oLon: origin.D,
+              dLat: destination.k,
+              dLon: destination.D,
+              date: new Date()
+           }
+        })
+        .success(function (data) {
+          passengers = data.matches;        
+          cb(passengers);
+        })
+        .error(function() {
+          console.log('get passengers error');
+        });
+    }
 
-    // TODO get array of passengers available in map
-    function getPassengers(origin,destination) {
-      console.log('origin: ', origin.k);
-      console.log('destination', destination.k);
+    function getDrivers(origin,destination, cb) {
       return $http({
             url: '/passenger',
             method: "GET",
             params: {
               oLat: origin.k,
-              oLong: origin.D,
+              oLon: origin.D,
               dLat: destination.k,
-              dLong: destination.D
+              dLon: destination.D,
+              date: new Date()
            }
         })
         .success(function (data) {
-          console.log(data);
-          dataservice.passengers = data;
+          drivers = data.matches;        
+          cb(passengers);
         })
         .error(function() {
-          console.log('get passengers error');
+          console.log('get drivers error');
         });
-
-      // return [{
-      //   originCoordinates: [37.548270, -121.988572], // Fremont
-      //   destinationCoordinates: [37.432334,-121.899574], // Milpitas
-      //   id: 'Snoop Lion',
-      //   comment: 'sup'
-      // },
-      // {
-      //   originCoordinates: [37.724930,-122.156077], // San Leandro
-      //   destinationCoordinates: [37.668821,-122.080796], // Hayward
-      //   id: 'Mos Def',
-      //   comment: 'yo, need a ride ASAP'
-      // },
-      // {
-      //   originCoordinates: [37.593392,-122.043830], // Union City
-      //   destinationCoordinates: [37.557687,-121.977035], // Pleasanton
-      //   id: 'Beth Bust a Beat',
-      //   comment: 'I can haz ride?'
-      // }];
-    }
+    }    
 
     // This should get users local coordinates somehow...
     function getClientLoc(){
-      return [37.774929,-122.419416];
+      return [37.3333,-121.9000];
     }
     
   }
 })();
-
-
-
-
-
-

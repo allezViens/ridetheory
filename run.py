@@ -5,7 +5,7 @@ import os
 import json
 import sys
 
-app = Flask(__name__, static_folder='build', static_url_path='')
+app = Flask(__name__, static_folder='client', static_url_path='')
 mail = Mail(app)
 
 
