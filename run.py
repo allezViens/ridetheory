@@ -4,6 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import os
 import json
 import sys
+import customutilities
 
 app = Flask(__name__, static_folder='client', static_url_path='')
 mail = Mail(app)
@@ -30,6 +31,29 @@ from communication import *
 @app.route('/')
 def root():
 	return app.send_static_file('index.html')
+
+@app.route('/api/passenger/update', methods=['POST'])
+def passengerUpdate():
+	print 'api passenger update'
+	if (request.headers['Content-Type'][:16] == 'application/json'):
+		data = json.loads(request.data)
+		data = customutilities.detuplify(data)
+		if updatePassenger(data):
+			return 'Passenger record updated successfully'
+		else:
+			return 'ERROR. Passenger record was not updated.'
+
+@app.route('/api/driver/update', methods=['POST'])
+def driverUpdate():
+	print 'api driver update'
+	if (request.headers['Content-Type'][:16] == 'application/json'):
+		data = json.loads(request.data)
+		data = customutilities.detuplify(data)
+		print 'after data'
+		if updateDriver(data):
+			return 'Driver record updated successfully.'
+		else:
+			return 'ERROR. Driver record not updated.'
 
 @app.route('/api/driver', methods=['GET', 'POST'])
 def drivers():

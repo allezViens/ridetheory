@@ -45,15 +45,45 @@ def validatePassenger(passengerID):
   passenger.validatePassenger()
   save()
 
+def updatePassenger(passengerDict):
+  passenger = getPassenger(passengerDict['email'])
+  return update(passenger,passengerDict)
+
+def updateDriver(driverDict):
+  driver = getDriver(driverDict['email'])
+  return update(driver,driverDict)
+
+def update(model, dictionary):
+  if(model != ''):
+    model.oLat = dictionary['oLat']
+    model.oLon = dictionary['oLon']
+    model.dLat = dictionary['dLat']
+    model.dLon = dictionary['dLon']
+    model.date = dictionary['date']
+    db.session.add(model)
+    save()
+    return True
+  else:
+    return False
+
 '''DATABASE GET'''
 #TODO: Retrieve driver instance by ID
 def getDriver(driverID):
-  return Driver.query.filter_by(name=driverID).one()
-  #return Driver.query.filter_by(id=driverID).one()
+  try:
+    result = Driver.query.filter_by(email=driverID).one()
+  except:
+    result = ''
+  finally:
+    return result
 
 #TODO: Retrieve passenger instance by ID
 def getPassenger(passengerID):
-  return Passenger.query.filter_by(name=passengerID).one()
+  try:
+    result = Passenger.query.filter_by(email=passengerID).one()
+  except:
+    result = ''
+  finally:
+    return result
 
 #Returns all drivers that contain passenger route and same date
 #PARAMS: Passenger's origin and destination coordinates
