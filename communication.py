@@ -13,7 +13,6 @@ def sendValidationEmail(to, url):
 def sendEmail(to, header, body):
 	msg = Message(
 		header,
-		sender='allezviens01@gmail.com',
 		recipients=to
 		)
 	msg.body = "body"

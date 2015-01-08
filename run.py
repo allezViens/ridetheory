@@ -7,11 +7,7 @@ import sys
 import customutilities
 
 app = Flask(__name__, static_folder='client', static_url_path='')
-mail = Mail(app)
 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",'postgresql://localhost/allezviens')
-db = SQLAlchemy(app)
 
 # app.config.update(
 # 	#Comment out for production
@@ -23,7 +19,24 @@ db = SQLAlchemy(app)
 # 	MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
 # 	MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 # 	)
+
+# app.config.update(
+# 	#Comment out for production
+# 	DEBUG = True,
+# 	#Email Settings
+# 	SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL",'postgresql://localhost/allezviens'),
+# 	MAIL_SERVER = 'smtp.gmail.com',
+# 	MAIL_PORT = 465,
+# 	MAIL_USE_SSL = True,
+# 	MAIL_DEFAULT_SENDER = 'allezviens01@gmail.com',
+# 	MAIL_USERNAME = 'allezviens01@gmail.com',
+# 	MAIL_PASSWORD = 'swiftmanatee'
+# 	# MAIL_USERNAME = os.environ.get('MAIL_USERNAME'),
+# 	# MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+# 	)
+
 db = SQLAlchemy(app)
+mail = Mail(app)
 
 from connect import * 
 from communication import *
@@ -98,29 +111,21 @@ def passengers():
 				return 'Successful pick'
 
 @app.route('/api/trip/<urlID>', methods=['GET'])
-def apitrip(urlID):
-	print 'in api trip'
+def apiTrip(urlID):
 	if (request.method == 'GET'):
-		print 'in api trip'
-		print urlID
-		type, info = getInfoByUrl(urlID)
-		if(type == 'P'):
-		  return jsonify(passenger=info[0])
-		if(type == 'D'):
-		  return jsonify(driver=info[0])
+		urlType, info = getInfoByUrl(urlID)
+		if(urlType == 'P'):
+		  return jsonify(passenger=info)
+		if(urlType == 'D'):
+		  return jsonify(driver=info)
 	
-@app.route('/trip/<urlID>', methods=['GET'])
+@app.route('/trip/<urlID>')
 def trip(urlID):
-	print 'in trip urlid'
-	if (request.method == 'GET'):
-		print 'get method'
-		print urlExists(urlID)
-		if(urlExists(urlID)):
-			print 'url exists'
-			return app.send_static_file('index.html')
-		else: 
-			print 'url does not exist'
-			return '404 route not found'
+	if(urlExists(urlID)):
+		return app.send_static_file('index.html')
+	else: 
+		print 'url does not exist'
+		return '404 route not found'
 	
 
 if (__name__ == '__main__'):
