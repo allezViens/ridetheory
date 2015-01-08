@@ -20,18 +20,27 @@ def addPassenger(id, oLat, oLon, dLat, dLon, date):
   db.session.add(passenger)
   save()
 
-#Adds driver-passenger pick to table
+#Adds a driver to a passenger's picks
 def pickDriver(driverID, passengerID):
   driver = getDriver(driverID)
   passenger = getPassenger(passengerID)
-  passenger.pick(driver) 
+  #Toggle pick based on whether driver is already in passenger's picks
+  currentPicks = findPassengerPicks(passengerID)
+  if (driver in currentPicks):
+    passenger.unpick(driver)
+  else:
+    passenger.pick(driver) 
   save()
 
-#Adds passenger-driver pick to table
+#Adds a passenger to a driver's picks
 def pickPassenger(passengerID, driverID):
   passenger = getPassenger(passengerID)
   driver = getDriver(driverID)
-  driver.pick(passenger)
+  currentPicks = findDriverPicks(driverID)
+  if (passenger in currentPicks):
+    driver.unpick(passenger)
+  else:
+    driver.pick(passenger)
   save()
 
 #Validates users
@@ -46,14 +55,13 @@ def validatePassenger(passengerID):
   save()
 
 '''DATABASE GET'''
-#TODO: Retrieve driver instance by ID
+#Retrieve driver instance by ID
 def getDriver(driverID):
-  return Driver.query.filter_by(name=driverID).one()
-  #return Driver.query.filter_by(id=driverID).one()
+  return Driver.query.filter_by(email=driverID).one()
 
-#TODO: Retrieve passenger instance by ID
+#Retrieve passenger instance by ID
 def getPassenger(passengerID):
-  return Passenger.query.filter_by(name=passengerID).one()
+  return Passenger.query.filter_by(email=passengerID).one()
 
 #Returns all drivers that contain passenger route and same date
 #PARAMS: Passenger's origin and destination coordinates
@@ -92,20 +100,25 @@ def findPassengerPicks(passengerID):
 
 #TODO: Checks if both driver and passenger have picked each other
 def isReciprocal(driverID, passengerID):
-	return '' 
+  return '' 
 
+#Returns object with user's email, origin, destination, and pick information
 def getInfoByUrl(url):
   match = Driver.query.filter_by(editURL=url).all()
   if(len(match)>0):
-    return 'D', formatResults(match)
+    driver = match[0]
+    picks = findDriverPicks(driver.email)
+    return 'D', objectifyWithPickInfo(driver, picks)
   match = Passenger.query.filter_by(editURL=url).all()
   if(len(match)>0):
-    return 'P', formatResults(match)
+    passenger = match[0]
+    picks = findPassengerPicks(passenger.email)
+    return 'P', objectifyWithPickInfo(passenger, picks)
   return 'NA', False
 
 def urlExists(url):
-  type, info = getInfoByUrl(url)
-  if(type == 'NA'):
+  urlType, info = getInfoByUrl(url)
+  if(urlType == 'NA'):
     return False
   return True
 
@@ -122,26 +135,21 @@ def driverUrlExists(url):
   return False
 
 '''DATABASE DELETION'''
-#TODO: Deletes driver + route from database
+#Deletes driver + route from database
 def deleteDriver(id):
+  driver = getDriver(id)
+  db.session.delete(driver)
   save()
   return ''
 
-#TODO: Deletes passenger + route from database
+#Deletes passenger + route from database
 def deletePassenger(id):
+  passenger = getPassenger(id)
+  db.session.delete(passenger)
   save()
   return ''
 
-#TODO: Delete driver's picks from table
-def deleteDriverPicks(driverID):
-	save()
-	return ''
-
-#TODO: Delete passenger's picks from table
-def deletePassengerPicks(passengerID):
-	save()
-	return ''
-
+'''HELPER FUNCTIONS'''
 def save():
   print 'save function'
   for obj in db.session:
@@ -161,7 +169,8 @@ def formatResults(modelArray):
     res.append(objectify(modelArray[i]))
   return res
 
-def objectify(model,addMatches):
+#Converts a SQLAlchemy Model and converts it into a Python object
+def objectify(model):
   obj = {
     "id": model.email,
     "origin": [float(model.oLat), float(model.oLon)],
@@ -170,6 +179,23 @@ def objectify(model,addMatches):
   }
   return obj
 
+#Extends objectify with pick information
+def objectifyWithPickInfo(model, picks):
+  obj = objectify(model)
+  obj["picks"] = parseUserPicks(picks)
+  return obj
+
+#Takes users pick information and returns array of each pick denoting either CONFIRMED or PENDING status
+def parseUserPicks(user, picks):
+  res = []
+  for pick in picks:
+    if (user in pick.picks):
+      res.append({"id": pick.email, "status": "CONFIRMED"})
+    else:
+      res.append({"id": pick.email, "status": "PENDING"})
+  return res
+
+#Adds buffer around location
 def makeBuffer(lat,lon,miles,direction):
   #This earth radius in miles may not be entirely accurate - there are various numbers and the earth is not a perfect sphere
   #for the case of a buffer though, probably doesn't really matter
@@ -181,7 +207,6 @@ def makeBuffer(lat,lon,miles,direction):
 
   #cast as float or this breaks, because angular direction is a tiny tiny number 
   angularDirection = float(miles)/float(earthRadiusMiles)
-  print angularDirection
   if(direction=="NW"):
     bearing = northwest
   if(direction=="SE"):
@@ -201,5 +226,4 @@ def makeURL(id):
       hash = hashlib.md5(id).hexdigest()
       url = hash[0:8]
   return url
-
 
