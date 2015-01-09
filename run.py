@@ -20,20 +20,20 @@ app = Flask(__name__, static_folder='client', static_url_path='')
 # 	MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 # 	)
 
-# app.config.update(
-# 	#Comment out for production
-# 	DEBUG = True,
-# 	#Email Settings
-# 	SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL",'postgresql://localhost/allezviens'),
-# 	MAIL_SERVER = 'smtp.gmail.com',
-# 	MAIL_PORT = 465,
-# 	MAIL_USE_SSL = True,
-# 	MAIL_DEFAULT_SENDER = 'allezviens01@gmail.com',
-# 	MAIL_USERNAME = 'allezviens01@gmail.com',
-# 	MAIL_PASSWORD = 'swiftmanatee'
-# 	# MAIL_USERNAME = os.environ.get('MAIL_USERNAME'),
-# 	# MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-# 	)
+app.config.update(
+	#Comment out for production
+	DEBUG = True,
+	#Email Settings
+	SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL",'postgresql://localhost/allezviens'),
+	MAIL_SERVER = 'smtp.gmail.com',
+	MAIL_PORT = 465,
+	MAIL_USE_SSL = True,
+	MAIL_DEFAULT_SENDER = 'allezviens01@gmail.com',
+	MAIL_USERNAME = 'allezviens01@gmail.com',
+	MAIL_PASSWORD = 'swiftmanatee'
+	# MAIL_USERNAME = os.environ.get('MAIL_USERNAME'),
+	# MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+	)
 
 db = SQLAlchemy(app)
 mail = Mail(app)
@@ -45,9 +45,22 @@ from communication import *
 def root():
 	return app.send_static_file('index.html')
 
+@app.route('/api/message', methods=['POST'])
+def apiSendMessage():
+	if (request.headers['Content-Type'][:16] == 'application/json'):
+		print request.data
+		data = json.loads(request.data)
+		print 'jsonified data'
+		print data
+		#fromID email
+		#toID email
+		#fromType
+		#message string 
+		sendMessage(data['to'], data['from'], data['message'], data['fromType'])
+		return 'Message sent'
+
 @app.route('/api/passenger/update', methods=['POST'])
 def passengerUpdate():
-	print 'api passenger update'
 	if (request.headers['Content-Type'][:16] == 'application/json'):
 		data = json.loads(request.data)
 		data = customutilities.detuplify(data)
@@ -58,11 +71,9 @@ def passengerUpdate():
 
 @app.route('/api/driver/update', methods=['POST'])
 def driverUpdate():
-	print 'api driver update'
 	if (request.headers['Content-Type'][:16] == 'application/json'):
 		data = json.loads(request.data)
 		data = customutilities.detuplify(data)
-		print 'after data'
 		if updateDriver(data):
 			return 'Driver record updated successfully.'
 		else:
