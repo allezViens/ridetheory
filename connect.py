@@ -4,6 +4,7 @@ import sys
 import math
 import hashlib
 import time
+from communication import sendUserEmail
 
 '''DATABASE INSERTION/UPDATE'''
 #Adds driver to database
@@ -54,14 +55,47 @@ def validatePassenger(passengerID):
   passenger.validatePassenger()
   save()
 
+def updatePassenger(passengerDict):
+  passenger = getPassenger(passengerDict['email'])
+  return update(passenger,passengerDict)
+
+def updateDriver(driverDict):
+  driver = getDriver(driverDict['email'])
+  return update(driver,driverDict)
+
+def update(model, dictionary):
+  if(model != ''):
+    model.oLat = dictionary['oLat']
+    model.oLon = dictionary['oLon']
+    model.dLat = dictionary['dLat']
+    model.dLon = dictionary['dLon']
+    model.date = dictionary['date']
+    db.session.add(model)
+    save()
+    return True
+  else:
+    return False
+
 '''DATABASE GET'''
 #Retrieve driver instance by ID
 def getDriver(driverID):
-  return Driver.query.filter_by(email=driverID).one()
+  try:
+    result = Driver.query.filter_by(email=driverID).one()
+  except:
+    result = ''
+  finally:
+    return result
+
 
 #Retrieve passenger instance by ID
 def getPassenger(passengerID):
-  return Passenger.query.filter_by(email=passengerID).one()
+  try:
+    result = Passenger.query.filter_by(email=passengerID).one()
+  except:
+    result = ''
+  finally:
+    return result
+
 
 #Returns all drivers that contain passenger route and same date
 #PARAMS: Passenger's origin and destination coordinates
@@ -104,12 +138,18 @@ def isReciprocal(driverID, passengerID):
 
 #Returns object with user's email, origin, destination, and pick information
 def getInfoByUrl(url):
+  print 'get info by url'
+  print url
   match = Driver.query.filter_by(editURL=url).all()
+  print 'after match'
+  print match
   if(len(match)>0):
     driver = match[0]
     picks = findDriverPicks(driver.email)
     return 'D', objectifyWithPickInfo(driver, picks)
-  match = Passenger.query.filter_by(editURL=url).all()
+  # match = Passenger.query.filter_by(editURL=url).all()
+  print 'driver'
+  print match
   if(len(match)>0):
     passenger = match[0]
     picks = findPassengerPicks(passenger.email)
@@ -133,6 +173,22 @@ def driverUrlExists(url):
   if(len(match)>0):
     return True
   return False
+
+def sendMessage(to, sender, message, fromType):
+  sent = True
+  try:
+    if(fromType[0].upper()=='D'):
+      passenger = getPassenger(to)
+      url = passenger.editURL
+    else:
+      driver = getDriver(to)
+      url = driver.editURL
+    sendUserEmail(to,sender,message,url)
+  except:
+    sent = False
+  finally:
+    return sent
+
 
 '''DATABASE DELETION'''
 #Deletes driver + route from database
@@ -166,6 +222,7 @@ def save():
 def formatResults(modelArray):
   res = []
   for i in range(len(modelArray)):
+    print 'in for loop'
     res.append(objectify(modelArray[i]))
   return res
 
@@ -182,7 +239,7 @@ def objectify(model):
 #Extends objectify with pick information
 def objectifyWithPickInfo(model, picks):
   obj = objectify(model)
-  obj["picks"] = parseUserPicks(picks)
+  obj["picks"] = parseUserPicks(model, picks)
   return obj
 
 #Takes users pick information and returns array of each pick denoting either CONFIRMED or PENDING status
