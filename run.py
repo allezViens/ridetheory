@@ -15,7 +15,7 @@ app.config.update(
 	MAIL_SERVER = 'smtp.gmail.com',
 	MAIL_PORT = 465,
 	MAIL_USE_SSL = True,
-	MAIL_DEFAULT_SENDER = 'allezviens01@gmail.com',
+	# MAIL_DEFAULT_SENDER = 'allezviens01@gmail.com',
 	MAIL_USERNAME = 'allezviens01@gmail.com',
 	MAIL_PASSWORD = 'swiftmanatee'
 	# MAIL_USERNAME = os.environ.get('MAIL_USERNAME'),
@@ -46,8 +46,8 @@ def drivers():
 			if (data['type'] == 'create'):
 				oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
 				dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
-				addDriver(data['id'], oLat, oLon, dLat, dLon, data['date'])
-				# sendValidationEmail(data['id'], 'http://giphy.com/gifs/running-penguin-baby-s73EQWBuDlcas')
+				userURL = addDriver(data['id'], oLat, oLon, dLat, dLon, data['date'])
+				sendValidationEmail(data['id'], 'http://allez-viens.herokuapp.com/trip/' + userURL)
 				return 'Driver added to database'
 			if (data['type'] == 'pick'):
 				pickPassenger(data['passengerID'],data['driverID'])
@@ -67,8 +67,8 @@ def passengers():
 			if (data['type'] == 'create'):
 				oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
 				dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
-				addPassenger(data['id'], oLat, oLon, dLat, dLon, data['date'])
-				# sendValidationEmail(data['id'], 'http://giphy.com/gifs/running-penguin-baby-s73EQWBuDlcas')
+				userURL = addPassenger(data['id'], oLat, oLon, dLat, dLon, data['date'])
+				sendValidationEmail(data['id'], 'http://allez-viens.herokuapp.com/trip/' + userURL)
 				return 'Passenger added to database'
 			if (data['type'] == 'pick'):
 				pickDriver(data['driverID'],data['passengerID'])

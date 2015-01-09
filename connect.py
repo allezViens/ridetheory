@@ -12,6 +12,7 @@ def addDriver(id, oLat, oLon, dLat, dLon, date):
   driver = Driver(id, oLat, oLon, dLat, dLon, date, url)
   db.session.add(driver)
   save()
+  return url
 
 #Adds passenger to database
 def addPassenger(id, oLat, oLon, dLat, dLon, date):
@@ -19,6 +20,7 @@ def addPassenger(id, oLat, oLon, dLat, dLon, date):
   passenger = Passenger(id, oLat, oLon, dLat, dLon, date, url)
   db.session.add(passenger)
   save()
+  return url
 
 #Adds a driver to a passenger's picks
 def pickDriver(driverID, passengerID):
@@ -182,7 +184,7 @@ def objectify(model):
 #Extends objectify with pick information
 def objectifyWithPickInfo(model, picks):
   obj = objectify(model)
-  obj["picks"] = parseUserPicks(picks)
+  obj["picks"] = parseUserPicks(model, picks)
   return obj
 
 #Takes users pick information and returns array of each pick denoting either CONFIRMED or PENDING status
