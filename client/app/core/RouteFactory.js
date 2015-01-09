@@ -90,11 +90,10 @@
     }
 
     function saveRoute(tripObject) {
-      var endpoint = '/' + tripObject.role;
       tripObject.type = 'create';
       return $http({
         method: 'POST',
-        url: '/' + tripObject.role,
+        url: '/api/' + tripObject.role,
         data: JSON.stringify(tripObject)
       })
       .success(function (data) {

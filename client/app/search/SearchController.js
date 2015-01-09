@@ -22,7 +22,7 @@
           .then(function(){
             vm.originLatLon = RouteFactory.origin;
             GoogleFactory.setOrigin(vm.originLatLon);
-            if(RouteFactory.destination){
+            if(RouteFactory.origin && RouteFactory.destination){
              GoogleFactory.drawRoute(vm.originLatLon,vm.destinationLatLon);
             }
           });
@@ -35,7 +35,7 @@
          .then(function(){
            vm.destinationLatLon = RouteFactory.destination;
            GoogleFactory.setDestin(vm.destinationLatLon);
-           if(RouteFactory.origin){
+           if(RouteFactory.origin && RouteFactory.destination){
             GoogleFactory.drawRoute(vm.originLatLon,vm.destinationLatLon);
            }
          }) 
@@ -43,7 +43,6 @@
       }
 
       function removeDestination(){
-        console.log('removeDestination');
         RouteFactory.removeDestination();
         GoogleFactory.removeDestination()
         vm.destination = vm.destinationLatLon = null;
@@ -60,7 +59,7 @@
         RouteFactory
         .saveRoute(vm.trip)
         .then(function(){
-          $location.href = "/email";
+          window.location.href="/confirm.html";
         })
       }
 

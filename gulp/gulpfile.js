@@ -43,6 +43,7 @@ gulp.task('watch',['lint-js'],function(){
 gulp.task('bundle-css',function(){
   return gulp
     .src(pkg.paths.src.css)
+    .pipe(plug.size({showFiles:true}))
     .pipe(plug.plumber())
     .pipe(plug.sass())
     .pipe(plug.minifyCss({
