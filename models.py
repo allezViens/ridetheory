@@ -41,6 +41,10 @@ class Driver(db.Model):
     self.picks.append(passenger)
     return self
 
+  def unpick(self, passenger):
+    self.picks.remove(passenger)
+    return self
+
   def validate(self):
   	self.validated = True
   	return self
@@ -74,6 +78,10 @@ class Passenger(db.Model):
     self.picks.append(driver)
     return self
 
+  def unpick(self, driver):
+    self.picks.remove(driver)
+    return self
+
   def validate(self):
-	self.validated = True
-	return self
+  	self.validated = True
+  	return self
