@@ -16,7 +16,7 @@ angular
       views: {
         'map@': {
           templateUrl: 'app/map/map.html',
-          controller: 'Map as vm'
+          controller: 'MapCtrl as vm'
         },
         'searchbox@': {
           templateUrl: 'app/search/search.html',

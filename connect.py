@@ -226,7 +226,6 @@ def formatResults(modelArray):
     res.append(objectify(modelArray[i]))
   return res
 
-#Converts a SQLAlchemy Model and converts it into a Python object
 def objectify(model):
   obj = {
     "id": model.email,

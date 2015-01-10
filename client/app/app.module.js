@@ -19,7 +19,7 @@
         /*
          * Feature areas
          */
-        'app.map',
+        'app.gmap',
         'app.search'
     ]);
 

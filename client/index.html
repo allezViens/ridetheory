@@ -12,11 +12,12 @@
   <body>
 
     <div id="container">
-      <div class="map" ui-view="map"></div> 
       <div class="panel" ui-view="searchbox"></div> 
+      <div class="map" ui-view="map"></div> 
     </div>
+
   <!-- inject:js -->
   <!-- endinject -->  
-  <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+  <script src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
   </body>
 </html> 
