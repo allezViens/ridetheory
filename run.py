@@ -41,103 +41,151 @@ mail = Mail(app)
 from connect import * 
 from communication import *
 
+#Places for people to go 
 @app.route('/')
 def root():
 	return app.send_static_file('index.html')
 
-@app.route('/api/message', methods=['POST'])
-def apiSendMessage():
-	if (request.headers['Content-Type'][:16] == 'application/json'):
-		print request.data
-		data = json.loads(request.data)
-		print 'jsonified data'
-		print data
-		#fromID email
-		#toID email
-		#fromType
-		#message string 
-		sendMessage(data['to'], data['from'], data['message'], data['fromType'])
-		return 'Message sent'
-
-@app.route('/api/passenger/update', methods=['POST'])
-def passengerUpdate():
-	if (request.headers['Content-Type'][:16] == 'application/json'):
-		data = json.loads(request.data)
-		data = customutilities.detuplify(data)
-		if updatePassenger(data):
-			return 'Passenger record updated successfully'
+@app.route('/trip/<urlID>')
+def trip(urlID):
+	if(urlExists(urlID,True)):
+		return app.send_static_file('index.html')
+	else: 
+		print 'url does not exist'
+		return '404 route not found'
+	
+#Places for developers to go
+@app.route('/api/driver', methods=['POST','GET'])
+def driver():
+	if (request.method == 'GET'):
+		email = request.args.get('email')
+		results = getDriverInfo(email)
+		return jsonify(results)
+	if (request.method == 'POST'):
+		if (request.headers['Content-Type'][:16] == 'application/json'):
+			data = json.loads(request.data)
+			oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
+			dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
+			driver = addDriver(data['email'], data['alias'], oLat, oLon, dLat, dLon, data['date'])
+			sendValidationEmail(data['email'], driver.editURL)
+			return 'Driver added to database'
 		else:
-			return 'ERROR. Passenger record was not updated.'
+			return 'Incorrect data type for POST request. Use JSON format.'
 
-@app.route('/api/driver/update', methods=['POST'])
-def driverUpdate():
-	if (request.headers['Content-Type'][:16] == 'application/json'):
-		data = json.loads(request.data)
-		data = customutilities.detuplify(data)
-		if updateDriver(data):
-			return 'Driver record updated successfully.'
+@app.route('/api/passenger', methods=['POST','GET'])
+def passenger():
+	if (request.method == 'GET'):
+		email = request.args.get('email')
+		results = getPassengerInfo(email)
+		return jsonify(results)
+	if (request.method == 'POST'):
+		if (request.headers['Content-Type'][:16] == 'application/json'):
+			data = json.loads(request.data)
+			oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
+			dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
+			passenger = addPassenger(data['email'], data['alias'], oLat, oLon, dLat, dLon, data['date'])
+			sendValidationEmail(data['email'], passenger.editURL)
+			return 'Driver added to database'
 		else:
-			return 'ERROR. Driver record not updated.'
+			return 'Incorrect data type for POST request. Use JSON format.'
 
-@app.route('/api/driver', methods=['GET', 'POST'])
-def drivers():
+@app.route('/api/driver/matches', methods=['GET'])
+def driverMatches():
 	if (request.method == 'GET'):
 		oLat, oLon = float(request.args.get('oLat')), float(request.args.get('oLon'))
 		dLat, dLon = float(request.args.get('dLat')), float(request.args.get('dLon'))
 		date = request.args.get('date')
 		results = findMatchableDrivers(oLat, oLon, dLat, dLon, date)
 		return jsonify(matches=results)
-	if (request.method == 'POST'):
-		if (request.headers['Content-Type'][:16] == 'application/json'):
-			data = json.loads(request.data)
-			if (data['type'] == 'create'):
-				oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
-				dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
-				addDriver(data['id'], oLat, oLon, dLat, dLon, data['date'])
-				# sendValidationEmail(data['id'], 'http://giphy.com/gifs/running-penguin-baby-s73EQWBuDlcas')
-				return 'Driver added to database'
-			if (data['type'] == 'pick'):
-				pickPassenger(data['passengerID'],data['driverID'])
-				return 'Successful pick'
+	else:
+		return 'Only GET requests are allowed on this route'
 
-@app.route('/api/passenger', methods=['GET', 'POST'])
-def passengers():
+@app.route('/api/passenger/matches', methods=['GET'])
+def passengerMatches():
 	if (request.method == 'GET'):
 		oLat, oLon = float(request.args.get('oLat')), float(request.args.get('oLon'))
 		dLat, dLon = float(request.args.get('dLat')), float(request.args.get('dLon'))
 		date = request.args.get('date')
 		results = findMatchablePassengers(oLat, oLon, dLat, dLon, date)
 		return jsonify(matches=results)
-	if (request.method == 'POST'):
-		if (request.headers['Content-Type'][:16] == 'application/json'):
-			data = json.loads(request.data)
-			if (data['type'] == 'create'):
-				oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
-				dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
-				addPassenger(data['id'], oLat, oLon, dLat, dLon, data['date'])
-				# sendValidationEmail(data['id'], 'http://giphy.com/gifs/running-penguin-baby-s73EQWBuDlcas')
-				return 'Passenger added to database'
-			if (data['type'] == 'pick'):
-				pickDriver(data['driverID'],data['passengerID'])
-				return 'Successful pick'
+	else:
+		return 'Only GET requests are allowed.'
 
-@app.route('/api/trip/<urlID>', methods=['GET'])
-def apiTrip(urlID):
+@app.route('/api/message', methods=['POST'])
+def message():
+	if (request.headers['Content-Type'][:16] == 'application/json'):
+		data = json.loads(request.data)
+		if(sendMessage(data['to'], data['from'], data['message'], data['fromType'])):
+			return 'Message sent successfully.'
+		else:
+			return 'ERROR. Message not sent.'
+	else: 
+		return 'Incorrect data type for POST request. Use JSON format.'
+
+@app.route('/api/trip', methods=['GET', 'POST'])
+def apiTrip():
 	if (request.method == 'GET'):
-		urlType, info = getInfoByUrl(urlID)
+		urlType, info = getInfoByUrl(request.args.get('token'))
 		if(urlType == 'P'):
 		  return jsonify(passenger=info)
 		if(urlType == 'D'):
 		  return jsonify(driver=info)
-	
-@app.route('/trip/<urlID>')
-def trip(urlID):
-	if(urlExists(urlID)):
-		return app.send_static_file('index.html')
-	else: 
-		print 'url does not exist'
-		return '404 route not found'
-	
+		else:
+			return 'ERROR. No info associated with URL token '
+	if (request.method == 'POST'):
+		data = json.loads(request.data)
+		if(urlExists(data['token'],False)):
+		  data = customutilities.detuplify(data)
+		  if(data['type'][0].upper()=='D'):
+		  	if(updateDriver(data)):
+		  		return 'Driver record updated successfully'
+		  	else:
+		  		return 'ERROR. Driver record was not updated.'
+		  elif (data['type'][0].upper()=='P'):
+		  	if(updatePassenger(data)):
+		  		return 'Passenger record updated successfully'
+		  	else:
+		  		return 'ERROR. Passenger record was not updated.'
+		  else:
+		  	return 'ERROR. Incorrect type. Please specify Driver or Passenger.'
+		else:
+			return 'ERROR. No route associated with token: ' + data['urlID']
+
+@app.route('/api/trip/picks', methods=['GET', 'POST'])
+def tripPicks():
+	if (request.method == 'GET'):
+		urlToken = request.args.get('urlToken')
+		urlType, info = getInfoByUrl(urlID)
+		if(urlType == 'P'):
+			return jsonify(info.picks)
+		elif (urlType == 'D'):
+			return jsonify(info.picks)
+		else:
+			return 'ERROR. No route associated with token or no token given.'
+	if (request.method == 'POST'):
+		if (request.headers['Content-Type'][:16] == 'application/json'):
+			data = json.loads(request.data)
+			type, info = getInfoByUrl(data['token'])
+			if (type=='D'):
+				if(data['pickType'][0].upper()=='A'):
+					pickPassenger(data['email'], info['email'], True)
+					return 'Successful pick'
+				elif (data['pickType'][0].upper()=='D'):
+					pickPassenger(data['email'], info['email'], False)
+					return 'Successful pick'
+				else:
+					return 'Incorrect pick type. Specify add or delete.'
+			if (type=='P'):
+				if(data['pickType'][0].upper()=='A'):
+					pickDriver(data['email'], info['email'], True)
+					return 'Successful pick'
+				elif (data['pickType'][0].upper()=='D'):
+					pickDriver(data['email'], info['email'], False)
+					return 'Successful pick'
+				else:
+					return 'Incorrect pick type. Specify add or delete.'
+			else:
+				return 'No route/user associated with that url token.'
 
 if (__name__ == '__main__'):
     app.run()
