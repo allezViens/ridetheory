@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="app">
   <head>
+    <base href="/">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>allezviens</title>
@@ -11,10 +12,7 @@
   </head>
   <body>
 
-    <div id="container">
-      <div class="panel" ui-view="searchbox"></div> 
-      <div class="map" ui-view="map"></div> 
-    </div>
+    <div ui-view="main"></div>
 
   <!-- inject:js -->
   <!-- endinject -->  

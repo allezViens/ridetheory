@@ -20,7 +20,8 @@
          * Feature areas
          */
         'app.gmap',
-        'app.search'
+        'app.search',
+        'app.route'
     ]);
 
 })();

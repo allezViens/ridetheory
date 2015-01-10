@@ -64,6 +64,8 @@
       }
 
       function updateModel(trip){
+        debugger
+        console.log(trip);
         var obj = angular.copy(trip);
         obj.origin = vm.originLatLon,
         obj.destination = vm.destinationLatLon;
@@ -73,15 +75,10 @@
 
       // Rewrites origin and destination with actual lat/lon
       function searchRoute(trip) {
-        console.log('search');
-        vm.trip = updateModel(trip);
-        GoogleFactory.setOriginDestination(vm.originLatLon,vm.destinationLatLon);
         RouteFactory
-          .searchRoute(vm.trip)
+          .searchRoute()
           .then(function(data) {
-            vm.allUsers = RouteFactory.possiblePassengers;
-            GoogleFactory.addMarkers(vm.allUsers);
-            GoogleFactory.getRoute(vm.originLatLon,vm.destinationLatLon);
+            console.log(data);
         });
       }
 

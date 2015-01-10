@@ -20,12 +20,14 @@
 
     return services;
 
+
     function convertToLocation(coordinate){
       return new google.maps.LatLng(coordinate[0],coordinate[1]);
     }
 
     function setOrigin(coordinate){
       setTripMarker(coordinate,0);
+      console.log("org"); 
     }
 
     function removeOrigin(){
@@ -35,7 +37,8 @@
     }
 
     function setDestin(coordinate){
-      setTripMarker(coordinate,1);    
+      setTripMarker(coordinate,1); 
+      console.log("dest"); 
     }
 
     function removeDestination(){
@@ -69,7 +72,7 @@
         var extendPoint2 = new google.maps.LatLng(bounds.getNorthEast().lat() - 0.05, bounds.getNorthEast().lng() - 0.05);
         bounds.extend(extendPoint1);
         bounds.extend(extendPoint2);
-      }
+      } 
       map.fitBounds(bounds);
     }
 
@@ -103,7 +106,6 @@
       map = new google.maps.Map( document.getElementById( 'map-canvas' ),mapOptions);   
       map.mapTypes.set('map_style', new google.maps.StyledMapType(mapStyles,{name: "Styled Map"}));
       map.setMapTypeId('map_style');  
-      map.panBy(-parseInt(document.getElementsByClassName('panel')[0].clientWidth)/2,0);
 
       // Create bounds
       overlayMap = new google.maps.OverlayView();

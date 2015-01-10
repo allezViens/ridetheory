@@ -71,18 +71,20 @@
       });
     }
 
-    function searchRoute(tripObject) {
+    function searchRoute() {
+      var trip = {
+        oLat: RouteFactory.origin[0], oLon: RouteFactory.origin[1],
+        dLat: RouteFactory.destination[0], dLon: RouteFactory.destination[1],
+        date: RouteFactory.date
+      }
       return $http({
-        url: '/' + tripObject.role,
+        url: 'api/driver',
         method: "GET",
-        params: {
-          oLat: tripObject.origin[0], oLon: tripObject.origin[1],
-          dLat: tripObject.destination[0], dLon: tripObject.destination[1],
-          date: tripObject.date
-         }
+        data: JSON.stringify(trip)
       })
       .success(function (data) {
-        RouteFactory.possiblePassengers = data.matches;
+        console.log(data);
+        // RouteFactory.possiblePassengers = data.matches;
       })
       .error(function() {
         console.log("searchRoute didn't return results");
