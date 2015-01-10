@@ -248,7 +248,6 @@ def formatResults(modelArray):
     res.append(objectify(modelArray[i]))
   return res
 
-#Converts a SQLAlchemy Model into a Python dictionary
 def objectify(model):
   obj = {
     "email": model.email,

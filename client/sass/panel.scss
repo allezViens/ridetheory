@@ -1,9 +1,83 @@
-.panel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 20%;
-  height: 100%;
+.routebox {
+  float: left;
+  width: 23%;
   padding: 1%;
-  background-color: rgba(white, 0.6);
+  background-color: white;
+
+  form {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+
+    button {
+      background-color: white;
+      border: 1px solid lightgrey;
+      padding: 0.5rem;
+      margin-left: 27px;
+      margin-top: 50px;
+    }
+
+    .role {
+      width: 100%;
+      text-align: center;
+      // padding: 10px 16px;
+      margin-bottom: 25px;
+      img {
+        width: 100%;
+      }
+
+      input {
+        width: 100%;
+      }
+
+      input[type=radio] {
+        display: none;
+      }
+      input[type=radio]:checked + label {
+        background-color: rgba(grey,0.1);
+      }
+      label {
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        user-select: none;
+        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: background-color 0.3s; }
+    }
+
+    div { 
+      label {
+        width: 5%;
+      }
+
+      input {
+        text-indent: 0.5rem;
+        width: 90%;
+        outline: none;
+        border: 0;
+        padding: 0;
+        line-height: 1.5rem;
+        margin: 10px;
+        -webkit-transition:all linear 200ms;
+        transition:all linear 200ms;
+        background: transparent;
+        &.ng-invalid:not(:focus) {
+          color:red;
+          background: rgba(red,0.3);
+          &:before {
+            content: 'Invalid email';
+            font-size: 10px;
+          }
+        }
+      }
+
+      span.clearInput {
+        position: absolute;
+        margin-left: -11px;
+        color: #cf4d46;
+        margin-top: 3px;
+        font-size: 22px;
+      }
+    }
+
+  }
 }
