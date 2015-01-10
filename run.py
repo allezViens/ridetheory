@@ -6,7 +6,7 @@ import json
 import sys
 import customutilities
 
-app = Flask(__name__, static_folder='client', static_url_path='')
+app = Flask(__name__, static_folder='build', static_url_path='')
 
 
 # app.config.update(
