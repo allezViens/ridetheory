@@ -4,45 +4,54 @@ import sys
 import math
 import hashlib
 import time
+from communication import sendUserEmail
 
 '''DATABASE INSERTION/UPDATE'''
 #Adds driver to database
-def addDriver(id, oLat, oLon, dLat, dLon, date):
+def addDriver(id, alias, oLat, oLon, dLat, dLon, date):
   url = makeURL(id)
-  driver = Driver(id, oLat, oLon, dLat, dLon, date, url)
+  driver = Driver(id, alias, oLat, oLon, dLat, dLon, date, url)
   db.session.add(driver)
   save()
-  return url
+  return driver
 
 #Adds passenger to database
-def addPassenger(id, oLat, oLon, dLat, dLon, date):
+def addPassenger(id, alias, oLat, oLon, dLat, dLon, date):
   url = makeURL(id)
-  passenger = Passenger(id, oLat, oLon, dLat, dLon, date, url)
+  passenger = Passenger(id, alias, oLat, oLon, dLat, dLon, date, url)
   db.session.add(passenger)
   save()
-  return url
+  return passenger
 
 #Adds a driver to a passenger's picks
-def pickDriver(driverID, passengerID):
+def pickDriver(driverID, passengerID, add):
   driver = getDriver(driverID)
   passenger = getPassenger(passengerID)
   #Toggle pick based on whether driver is already in passenger's picks
-  currentPicks = findPassengerPicks(passengerID)
-  if (driver in currentPicks):
-    passenger.unpick(driver)
+  #currentPicks = findPassengerPicks(passengerID)
+  # if (driver in currentPicks):
+  #   passenger.unpick(driver)
+  # else:
+  #   passenger.pick(driver) 
+  if(add):
+    passenger.pick(driver)
   else:
-    passenger.pick(driver) 
+    passenger.unpick(driver)
   save()
 
 #Adds a passenger to a driver's picks
-def pickPassenger(passengerID, driverID):
+def pickPassenger(passengerID, driverID, add):
   passenger = getPassenger(passengerID)
   driver = getDriver(driverID)
-  currentPicks = findDriverPicks(driverID)
-  if (passenger in currentPicks):
-    driver.unpick(passenger)
-  else:
+  # currentPicks = findDriverPicks(driverID)
+  # if (passenger in currentPicks):
+  #   driver.unpick(passenger)
+  # else:
+  #   driver.pick(passenger)
+  if(add):
     driver.pick(passenger)
+  else:
+    driver.unpick(passenger)
   save()
 
 #Validates users
@@ -56,14 +65,48 @@ def validatePassenger(passengerID):
   passenger.validatePassenger()
   save()
 
+def updatePassenger(passengerDict):
+  passenger = getPassenger(passengerDict['email'])
+  return update(passenger,passengerDict)
+
+def updateDriver(driverDict):
+  driver = getDriver(driverDict['email'])
+  return update(driver,driverDict)
+
+def update(model, dictionary):
+  if(model != ''):
+    model.oLat = dictionary['oLat']
+    model.oLon = dictionary['oLon']
+    model.dLat = dictionary['dLat']
+    model.dLon = dictionary['dLon']
+    model.date = dictionary['date']
+    model.alias = dictionary['alias']
+    db.session.add(model)
+    save()
+    return True
+  else:
+    return False
+
 '''DATABASE GET'''
 #Retrieve driver instance by ID
 def getDriver(driverID):
-  return Driver.query.filter_by(email=driverID).one()
+  try:
+    result = Driver.query.filter_by(email=driverID).first()
+  except:
+    result = ''
+  finally:
+    return result
+
 
 #Retrieve passenger instance by ID
 def getPassenger(passengerID):
-  return Passenger.query.filter_by(email=passengerID).one()
+  try:
+    result = Passenger.query.filter_by(email=passengerID).first()
+  except:
+    result = ''
+  finally:
+    return result
+
 
 #Returns all drivers that contain passenger route and same date
 #PARAMS: Passenger's origin and destination coordinates
@@ -118,23 +161,56 @@ def getInfoByUrl(url):
     return 'P', objectifyWithPickInfo(passenger, picks)
   return 'NA', False
 
-def urlExists(url):
+def getDriverInfo(email):
+  driver = getDriver(email)
+  picks = findDriverPicks(driver.email)
+  return objectifyWithPickInfo(driver,picks)
+
+def getPassengerInfo(email):
+  passenger = getPassenger(email)
+  picks = findPassengerPicks(passenger.email)
+  return objectifyWithPickInfo(passenger,picks)
+
+def urlExists(url, validate):
   urlType, info = getInfoByUrl(url)
-  if(urlType == 'NA'):
+  if(urlType == 'P'):
+    if(validate):
+      validatePassenger(info['email'])
+    return True
+  elif(urlType == 'D'):
+    if(validate):
+      validateDriver(info['email'])
+    return True
+  else:
     return False
-  return True
 
-def passengerUrlExists(url):
-  match = Passenger.query.filter_by(editURL=url).all()
-  if(len(match)>0):
-    return True
-  return False
+# def passengerUrlExists(url):
+#   match = Passenger.query.filter_by(editURL=url).all()
+#   if(len(match)>0):
+#     return True
+#   return False
 
-def driverUrlExists(url):
-  match = Driver.query.filter_by(editURL=url).all()
-  if(len(match)>0):
-    return True
-  return False
+# def driverUrlExists(url):
+#   match = Driver.query.filter_by(editURL=url).all()
+#   if(len(match)>0):
+#     return True
+#   return False
+
+def sendMessage(to, sender, message, fromType):
+  sent = True
+  try:
+    if(fromType[0].upper()=='D'):
+      passenger = getPassenger(to)
+      url = passenger.editURL
+    else:
+      driver = getDriver(to)
+      url = driver.editURL
+    sendUserEmail(to,sender,message,url)
+  except:
+    sent = False
+  finally:
+    return sent
+
 
 '''DATABASE DELETION'''
 #Deletes driver + route from database
@@ -168,13 +244,14 @@ def save():
 def formatResults(modelArray):
   res = []
   for i in range(len(modelArray)):
+    print 'in for loop'
     res.append(objectify(modelArray[i]))
   return res
 
-#Converts a SQLAlchemy Model and converts it into a Python object
 def objectify(model):
   obj = {
-    "id": model.email,
+    "email": model.email,
+    "alias": model.alias,
     "origin": [float(model.oLat), float(model.oLon)],
     "destination": [float(model.dLat), float(model.dLon)],
     "date": model.date
@@ -223,7 +300,7 @@ def makeURL(id):
   id = id + time.strftime("%M%S")
   hash = hashlib.md5(id).hexdigest()
   url = hash[0:8]
-  while(driverUrlExists(url) or passengerUrlExists(url)):
+  while(urlExists(url,False)):
       id = id + time.strftime("%M%S")
       hash = hashlib.md5(id).hexdigest()
       url = hash[0:8]

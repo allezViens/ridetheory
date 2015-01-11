@@ -19,8 +19,9 @@
         /*
          * Feature areas
          */
-        'app.map',
-        'app.search'
+        'app.gmap',
+        'app.postroute',
+        'app.route'
     ]);
 
 })();

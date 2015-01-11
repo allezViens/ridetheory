@@ -7,18 +7,13 @@
   /* ngInject */
   function userService() {
 
-    var user = {
-      origin: 'Berkeley, CA',
-      destination: 'San Jose, CA',
-      title: 'driver',
-      id: 'jonarnaldo@gmail.com',
-      originCoordinates: [37.871593, -122.272747],
-      destinationCoordinates: [37.333596, -121.890704]
-    };
+    var user = { };
 
     return {
       getUser: getUser,
-      setUser: setUser
+      setUser: setUser,
+      addUserProperty: addUserProperty,
+      user: user
     };
 
     function getUser(){
@@ -28,8 +23,9 @@
     function setUser(object){
       angular.copy(object,user);
     }
+
+    function addUserProperty(string, value) {
+      user[string] = value;
+    }
   }
 })();
-
-
-

@@ -10,20 +10,59 @@ angular
     $urlRouterProvider.otherwise('/');
 
     $stateProvider
-    .state('main', {
+    .state('create', {
+      abstract: true,
       url: '/',
-      templateUrl: 'app/index.html',
       views: {
-        'map@': {
+        'main' : {
+          templateUrl: 'app/partials/create.html'
+        }
+      }
+    })
+    .state('create.subs',{
+      url: '',
+      views: {
+        'map@create': {
           templateUrl: 'app/map/map.html',
-          controller: 'Map as vm'
+          controller: 'MapCtrl as vm'
         },
-        'searchbox@': {
-          templateUrl: 'app/search/search.html',
-          controller: 'Search as vm',
+        'postroute@create': {
+          templateUrl: 'app/postroute/postroute.html',
+          controller: 'PostRouteCtrl as vm',
+        }
+      }
+    })
+    .state('trip', {
+      resolve: {
+        tripData: function ($stateParams, $http) {
+          return $http.get('/api/trip/' + $stateParams.id)
+            .then(function(response) {
+              return response.data;
+          });
+        }  
+      },
+      abstract: true,
+      url: '/trip/:id',
+      views: {
+        'main' : {
+          templateUrl: 'app/partials/edit.html'
+        }
+      }
+    })
+    .state('trip.subs',{
+      url: '',
+      views: {
+        'map@trip': {
+          templateUrl: 'app/map/map.html',
+          controller: 'MapCtrl as vm'
+        },
+        'routebox@trip': {
+          templateUrl: 'app/routebox/routebox.html',
+          controller: 'RouteCtrl as vm',
         }
       }
     });
+    $locationProvider.html5Mode(true);
   }
 }).call(this);
 
