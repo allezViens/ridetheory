@@ -27,7 +27,6 @@
 
     function setOrigin(coordinate){
       setTripMarker(coordinate,0);
-      console.log("org"); 
     }
 
     function removeOrigin(){
@@ -38,7 +37,6 @@
 
     function setDestin(coordinate){
       setTripMarker(coordinate,1); 
-      console.log("dest"); 
     }
 
     function removeDestination(){
