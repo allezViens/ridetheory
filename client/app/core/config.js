@@ -15,7 +15,7 @@ angular
       url: '/',
       views: {
         'main' : {
-          templateUrl: 'app/layout/create.html'
+          templateUrl: 'app/partials/create.html'
         }
       }
     })
@@ -26,9 +26,9 @@ angular
           templateUrl: 'app/map/map.html',
           controller: 'MapCtrl as vm'
         },
-        'searchbox@create': {
-          templateUrl: 'app/search/search.html',
-          controller: 'Search as vm',
+        'postroute@create': {
+          templateUrl: 'app/postroute/postroute.html',
+          controller: 'PostRouteCtrl as vm',
         }
       }
     })
@@ -45,7 +45,7 @@ angular
       url: '/trip/:id',
       views: {
         'main' : {
-          templateUrl: 'app/layout/edit.html'
+          templateUrl: 'app/partials/edit.html'
         }
       }
     })

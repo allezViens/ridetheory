@@ -20,7 +20,7 @@
          * Feature areas
          */
         'app.gmap',
-        'app.search',
+        'app.postroute',
         'app.route'
     ]);
 
