@@ -7,5 +7,4 @@ connect.pyc
 run.pyc
 /gulp/node_modules
 /build
-models.pyc
 *.pyc
