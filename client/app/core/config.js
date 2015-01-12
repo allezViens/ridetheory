@@ -7,9 +7,11 @@ angular
 
   function config($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider){
 
-    $urlRouterProvider.otherwise('/');
+    // $urlRouterProvider.otherwise('/');
 
     $stateProvider
+
+
     .state('create', {
       abstract: true,
       url: '/',
@@ -39,6 +41,15 @@ angular
             .then(function(response) {
               return response.data;
           });
+          // return {
+          //   origin: [1.9, 22.1], 
+          //   destination: [3.3,4.5], 
+          //   date: "", 
+          //   picks:[
+          //   {alias:"jimbo", email: "jimbo@gmail.com", status: "pending"},
+          //   {alias:"teeg", email: "tgk@gmail.com", status: "confirmed"}
+          //   ]
+          // };
         }  
       },
       abstract: true,
@@ -49,7 +60,7 @@ angular
         }
       }
     })
-    .state('trip.subs',{
+    .state('trip.subs', {
       url: '',
       views: {
         'map@trip': {
@@ -61,7 +72,8 @@ angular
           controller: 'RouteCtrl as vm',
         }
       }
-    });
+    })
+
     $locationProvider.html5Mode(true);
   }
 }).call(this);

@@ -64,10 +64,9 @@
       }
 
       function updateModel(trip){
-        debugger
         console.log(trip);
         var obj = angular.copy(trip);
-        obj.origin = vm.originLatLon,
+        obj.origin = vm.originLatLon;
         obj.destination = vm.destinationLatLon;
         obj.date = trip.date.toISOString();
         return obj;

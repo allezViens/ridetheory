@@ -19,7 +19,8 @@
       saveRoute: saveRoute,
       addUser: addUser,
       removeOrigin: removeOrigin,
-      removeDestination: removeDestination
+      removeDestination: removeDestination,
+      reverseGeocode: reverseGeocode
     }
 
     return RouteFactory;
@@ -106,8 +107,16 @@
       });     
     }
 
-
-
+    // returns an object with latitude and longitude
+    function reverseGeocode(coordinates) {
+      var baseURL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
+      var key = "AIzaSyCGv1yOax6sOABKLyT6r9Fu5khXoTPlDfs";
+      var url = baseURL + coordinates[0] + ',' + coordinates[1] + '&key=' + key;
+      return $http({
+        method: 'GET',
+        url: url
+      });
+    }    
   }
 })();
 

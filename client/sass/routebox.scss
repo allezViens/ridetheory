@@ -3,6 +3,28 @@
   width: 23%;
   padding: 1%;
   background-color: white;
+}
 
-  
+.origin {
+  height: 50px;
+  width: 50px;
+  border-radius: 25px;
+  background-color: red;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  color: white;
+  margin: 5px;
+}
+
+.destination {
+  height: 50px;
+  width: 50px;
+  border-radius: 25px;
+  background-color: green;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  color: white;
+  margin: 5px;
 }

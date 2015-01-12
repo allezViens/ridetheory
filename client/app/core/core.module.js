@@ -14,6 +14,7 @@
 
          * 3rd Party modules
          */
-         'ngAutocomplete'
+         'ngAutocomplete',
+         'ngFx'
     ]);
 })();

@@ -1,10 +1,19 @@
 
-<h1>Routebox</h1>
+<img src="ride.png">
+<h1>Route</h1>
 
-<p>{{ vm.date }}</p>
-<p>{{ vm.origin }}</p>
-<p>{{ vm.destination }}</p>
-<p>{{ vm.id }}</p>
-<p>{{ vm.picks }}</p>
+<div class="container">
+  <table>
+    <tr ng-repeat="waypoint in vm.route" class="fx-fade-down" ng-click="vm.remove(waypoint)">
+      <td> 
+        <div class="{{waypoint.type}}"> 
+        {{waypoint.alias}} 
+        </div>
+      </td>
+      <td>  {{ waypoint.address }} </td>
+    </tr>
+  </table>
+</div>
 
-<button ng-click="vm.init()">Init map</button>
+<!-- <button ng-click="vm.remove()">Init map</button>
+ -->
