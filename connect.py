@@ -57,12 +57,12 @@ def pickPassenger(passengerID, driverID, add):
 #Validates users
 def validateDriver(driverID):
   driver = getDriver(driverID)
-  driver.validateDriver()
+  driver.validate()
   save()
 
 def validatePassenger(passengerID):
   passenger = getPassenger(passengerID)
-  passenger.validatePassenger()
+  passenger.validate()
   save()
 
 def updatePassenger(passengerDict):

@@ -4,7 +4,7 @@
     .module('app.core')
     .factory('GoogleFactory', GoogleFactory);
 
-  function GoogleFactory(RouteFactory) {
+  function GoogleFactory($http) {
     var map, directionsDisplay, overlayMap;
     var userMarkers = [];
     var tripMarkers = [undefined,undefined];
@@ -19,7 +19,6 @@
     }
 
     return services;
-
 
     function convertToLocation(coordinate){
       return new google.maps.LatLng(coordinate[0],coordinate[1]);
@@ -94,6 +93,27 @@
           directionsDisplay.setDirections(result);
         }
       });
+    }
+
+    function messageUser(to,from,message) {
+      var payload = { 
+        from: from,
+        to: to,
+        fromType: from.type,
+        message: message
+      }
+      return $http({
+        method: 'POST',
+        url: '/api/message',
+        data: JSON.stringify(payload)
+      })
+      .success(function (data) {
+        // TODO display successful send to user
+        console.log(data);
+      })
+      .error(function(){
+        console.log("could not send message");
+      });     
     }
    
     function initialize(lat,lon) {
