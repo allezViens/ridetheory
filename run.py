@@ -44,6 +44,7 @@ from communication import *
 #Places for people to go 
 @app.route('/')
 def root():
+	print 'root'
 	return app.send_static_file('index.html')
 
 @app.route('/trip/<urlID>')
