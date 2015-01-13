@@ -12,11 +12,11 @@
       vm.setOrigin = setOrigin;
       vm.setDestination = setDestination;
       vm.searchRoute = searchRoute;
-      vm.postRoute = postRoute;
+      vm.createRoute = createRoute;
       vm.removeDestination = removeDestination;
       vm.removeOrigin = removeOrigin;
 
-      function setOrigin(place) {
+      function setOrigin(coordinates) {
         if (place){
           RouteFactory.setOrigin(place)
           .then(function(){
@@ -54,20 +54,21 @@
         vm.origin = vm.originLatLon = null;
       }
 
-      function postRoute(trip){
+      function createRoute(trip){
         vm.trip = updateModel(trip);
+        console.log(vm.trip);
         RouteFactory
-        .saveRoute(vm.trip)
+        .createRoute(vm.trip)
         .then(function(){
           window.location.href="/confirm.html";
         })
       }
 
       function updateModel(trip){
-        console.log(trip);
+
         var obj = angular.copy(trip);
-        obj.origin = vm.originLatLon;
-        obj.destination = vm.destinationLatLon;
+        obj.origin = [trip.origin.geometry.location.k,trip.origin.geometry.location.D];
+        obj.destination = [trip.destination.geometry.location.k,trip.destination.geometry.location.D];
         obj.date = trip.date.toISOString();
         return obj;
       }

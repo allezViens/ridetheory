@@ -7,16 +7,18 @@
   function RouteFactory($http){
 
     var RouteFactory = {
+      userEmail: null,
+      userType: null,  
       origin: null,
       destination: null,
       date: Date.now(),
-      possiblePassengers: [],
-      addedPassengers: [],
+      possibleMatches: [],
+      selectedPassengers: [],
       setOrigin: setOrigin,
       setDestination: setDestination,
-      getLatLon: getLatLon,
-      searchRoute: searchRoute,
-      saveRoute: saveRoute,
+      getMatches: getMatches,
+      createRoute: createRoute,
+      getTrip: getTrip,
       addUser: addUser,
       removeOrigin: removeOrigin,
       removeDestination: removeDestination,
@@ -25,10 +27,8 @@
 
     return RouteFactory;
 
-    function setOrigin(place){
-      return getLatLon(place,function(coordinates){
-        RouteFactory.origin = coordinates;
-      });
+    function setOrigin(coordinates){
+      RouteFactory.origin = coordinates;
     }
 
     function removeOrigin(){
@@ -39,71 +39,66 @@
       destination = null;
     }
 
-    function setDestination(place){
-      return getLatLon(place,function(coordinates){
-        RouteFactory.destination = coordinates;
-      })
+    function setDestination(coordinates){
+      RouteFactory.destination = coordinates;
     }
 
     function addUser(user) {
-      RouteFactory.addedPassengers.push(user);
+      RouteFactory.selectedPassengers.push(user);
     }
 
     function createArrayOfWaypoints(){
       var waypoints = [];
       waypoints.push(RouteFactory.origin);
       waypoints.push(RouteFactory.destination);
-      for(i=0; i < RouteFactory.addedPassengers.length;i++){
-        waypoints.push(RouteFactory.addedPassengers[i].origin);
-        waypoints.push(RouteFactory.addedPassengers[i].destination);
+      for(i=0; i < RouteFactory.selectedPassengers.length;i++){
+        waypoints.push(RouteFactory.selectedPassengers[i].origin);
+        waypoints.push(RouteFactory.selectedPassengers[i].destination);
       }
       return waypoints;
     }
 
-    // returns an object with latitude and longitude
-    function getLatLon(place,callback) {
+    function getTrip(token){
+      var data = { token: token };
       return $http({
-        method: "GET",
-        url: "http://nominatim.openstreetmap.org/search?format=json&limit=3&q="+place
-      }).success(function(data) {
-        callback([data[0].lat,data[0].lon]); // returns multiple places. first object is the most accurate
-      }).error(function(){
-        console.log("getLatLon error");
-      });
+        method: 'GET',
+        url: '/api/trip?',
+        params: { token: token }
+      }).success(function(data){
+        RouteFactory.tripData = data;
+      })
     }
 
-    function searchRoute() {
+    function getMatches() {
       var trip = {
         oLat: RouteFactory.origin[0], oLon: RouteFactory.origin[1],
         dLat: RouteFactory.destination[0], dLon: RouteFactory.destination[1],
         date: RouteFactory.date
       }
       return $http({
-        url: 'api/driver',
-        method: "GET",
+        url: 'api/' + trip.type + '/matches',
+        method: 'GET',
         data: JSON.stringify(trip)
       })
       .success(function (data) {
-        console.log(data);
-        // RouteFactory.possiblePassengers = data.matches;
+        RouteFactory.possibleMatches = data;
       })
       .error(function() {
         console.log("searchRoute didn't return results");
       });
     }
 
-    function saveRoute(tripObject) {
-      tripObject.type = 'create';
+    function createRoute(tripObject) {
       return $http({
         method: 'POST',
-        url: '/api/' + tripObject.role,
+        url: '/api/' + tripObject.type,
         data: JSON.stringify(tripObject)
       })
       .success(function (data) {
         console.log(data);
       })
       .error(function(){
-        console.log("could not postRoute");
+        console.log("could not create route");
       });     
     }
 
@@ -117,6 +112,24 @@
         url: url
       });
     }    
+
+    function updateRoute(tripObject) {
+      /* {token: "h128ab", origin: [1.9,22.1], destination: [3.3,4.5], 
+       * date: "", alias: "beth", email: "beth@gmail.com", type:”Passenger/Driver”}
+       */
+      return $http({
+        method: 'POST',
+        url: '/api/trip',
+        data: JSON.stringify(tripObject)
+      })
+      .success(function (data) {
+        // TODO show status success to user
+        console.log(data);
+      })
+      .error(function(){
+        console.log("could not update route");
+      });     
+    }
   }
 })();
 

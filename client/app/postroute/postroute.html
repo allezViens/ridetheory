@@ -1,43 +1,43 @@
 
-  <form ng-model="trip" ng-submit="vm.postRoute(trip)" novalidate>
+  <form ng-model="trip" novalidate>
     <div class="role">
       <img src="ride.png">
       <input 
         id="driver"
-        ng-model="trip.role" 
+        ng-model="trip.type" 
         type="radio" 
-        name="role" 
+        name="type" 
         value="driver">
       <label for="driver">Driver</label>
       <input 
         id="passenger"
-        ng-model="trip.role" 
+        ng-model="trip.type" 
         type="radio" 
-        name="role" 
+        name="type" 
         value="passenger">
       <label for="passenger">Passenger</label>
     </div>
 
     <div class="endpoints">
       <input 
-        ng-model="trip.origin" 
+        ng-autocomplete
+        ng-model="trip.originText"
+        details="trip.origin"
         id="AutoComplete"
         type="text" 
-        placeholder="Type a starting point"
-        ng-blur="vm.setOrigin(trip.origin)"
-        ng-autocomplete="origin"
+        placeholder="Start"
         options="{country:'us'}"/>
         <span 
           ng-show="trip.origin.length" 
           ng-click="trip.origin = '';vm.removeOrigin()"
           class="clearInput">x</span>
       <input 
-        ng-model="trip.destination" 
+        ng-autocomplete
+        ng-model="trip.destinationText"
+        details="trip.destination"
         id="AutoComplete"
         type="text" 
-        placeholder="Type a destination"
-        ng-blur="vm.setDestination(trip.destination)"
-        ng-autocomplete="destination"
+        placeholder="Start"
         options="{country:'us'}"/> 
         <span 
           ng-show="trip.destination.length" 
@@ -54,17 +54,23 @@
 
     <div class="email">
       <input 
-      ng-model="trip.id" 
+      ng-model="trip.email" 
       type="email" 
       placeholder="name@email.com"/> 
     </div>
 
+    <div class="alias">
+      <input 
+      ng-model="trip.alias" 
+      type="text" 
+      placeholder="Kung Fu Panda"/> 
+    </div>
+
     <button 
-      type="submit">Post Route
+      ng-click="vm.createRoute(trip)">Post Route
     </button>  
 
   </div>
   </form>
-  <button ng-click="vm.searchRoute()">Fetch</button>
 
 

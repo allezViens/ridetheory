@@ -6,7 +6,8 @@
     .controller('RouteCtrl', RouteCtrl);
 
     /* ngInject */
-    function RouteCtrl(tripData, GoogleFactory, RouteFactory, $timeout, $q){
+
+    function RouteCtrl(GoogleFactory,RouteFactory,$stateParams){
       var vm = this;
       vm.user = tripData;
       vm.user.role = tripData.role;

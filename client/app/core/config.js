@@ -35,23 +35,6 @@ angular
       }
     })
     .state('trip', {
-      resolve: {
-        tripData: function ($stateParams, $http) {
-          return $http.get('/api/trip/' + $stateParams.id)
-            .then(function(response) {
-              return response.data;
-          });
-          // return {
-          //   origin: [1.9, 22.1], 
-          //   destination: [3.3,4.5], 
-          //   date: "", 
-          //   picks:[
-          //   {alias:"jimbo", email: "jimbo@gmail.com", status: "pending"},
-          //   {alias:"teeg", email: "tgk@gmail.com", status: "confirmed"}
-          //   ]
-          // };
-        }  
-      },
       abstract: true,
       url: '/trip/:id',
       views: {
