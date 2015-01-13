@@ -1,10 +1,10 @@
 
 <h1>Routebox</h1>
 
-<p>{{ vm.date }}</p>
-<p>{{ vm.origin }}</p>
-<p>{{ vm.destination }}</p>
-<p>{{ vm.id }}</p>
-<p>{{ vm.picks }}</p>
+<p>{{ vm.trip.date }}</p>
+<p>{{ vm.trip.origin }}</p>
+<p>{{ vm.trip.destination }}</p>
+<p>{{ vm.trip.id }}</p>
+<p>{{ vm.trip.picks }}</p>
 
-<button ng-click="vm.init()">Init map</button>
+<button ng-click="vm.initMap()">Init map</button>
