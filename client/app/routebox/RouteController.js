@@ -6,34 +6,37 @@
     .controller('RouteCtrl', RouteCtrl);
 
     /* ngInject */
-    function RouteCtrl(tripData, GoogleFactory, RouteFactory, $timeout){
+    function RouteCtrl(tripData, GoogleFactory, RouteFactory, $timeout, $q){
       var vm = this;
       vm.user = tripData;
       vm.user.role = tripData.role;
       vm.route = [ ];
+      vm.user.origin = vm.user.driver.origin || vm.user.passenger.origin;
+      vm.user.destination = vm.user.driver.destination || vm.user.passenger.destination;
 
       // Dummy data - get real data from Thomas
       // passenger matches
       var matches = [
-        {origin: [37.8044557, -122.2713563], destination: [37.3438502,-121.8831349], alias: 'alex', email: 'alex@gmail.com'},
-        {origin: [37.5482697, -121.9885719], destination: [37.431359,-121.885252153599], alias: 'bob', email: 'bob@gmail.com'},
+        {origin: [37.8044557, -122.2713563], destination: [37.3438502,-121.8831349], alias: 'Jonathan', email: 'Jonathan@gmail.com'},
+        {origin: [37.5482697, -121.9885719], destination: [37.431359,-121.885252153599], alias: 'Thomas', email: 'Thomas@gmail.com'},
       ];
 
       // Dummy data - get real data from Thomas
-      // array of ordered waypoints, incl. origin and destination
+      // array of ordered waypoints
       var waypoints = [[37.5482697, -121.9885719],[37.8044557, -122.2713563],[37.431359,-121.885252153599],[37.3438502,-121.8831349]];
-
 
       // takes an array of waypoints and returns a new array of objects
       // used to generate data for route graphic display
       // { type: origin/destination tuple, alias: name}
       function route (waypoints, matches) {
-        
+        // convert origin to address
+        var deferred = $q.defer();
+
         function compare (tupleA, tupleB) {
           return (tupleA[0] === tupleB[0] && tupleA[1] === tupleB[1]) ? true : false;
         }
 
-        waypoints.forEach(function (waypoint, index) {
+        waypoints.forEach(function (waypoint, index, cb) {
           matches.forEach(function (user) {
             if (compare(waypoint, user.origin)) {
               RouteFactory.reverseGeocode(user.origin)
@@ -60,6 +63,9 @@
             }
           });
         });
+
+        deferred.resolve();
+        return deferred.promise;
       }
 
       // remove person from route display
@@ -71,14 +77,27 @@
           }
         }
       }
- 
+
+      function createRoute () {
+        // start
+        RouteFactory.reverseGeocode(vm.user.origin).success(function (data) {
+          vm.route.push({type: 'origin', alias: 'Start', address: data.results[0].formatted_address});    
+          
+          route(waypoints, matches)
+          .then(function() { 
+              $timeout(function () {
+                vm.route.push({type: 'destination', alias: 'End', address: data.results[0].formatted_address});
+              }, 700);
+          });
+        });      
+      }
+
       function initialize(){
         // GoogleFactory.setOrigin(vm.origin);
         // GoogleFactory.setDestin(vm.destination);
         // GoogleFactory.drawRoute(vm.origin, vm.destination);
-        route(waypoints, matches);
+        createRoute();
       }
-
       initialize();
   }
 })();
