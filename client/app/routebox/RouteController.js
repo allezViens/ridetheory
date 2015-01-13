@@ -23,7 +23,7 @@
 
       // Dummy data - get real data from Thomas
       // array of ordered waypoints
-      var waypoints = [[37.5482697, -121.9885719],[37.8044557, -122.2713563],[37.431359,-121.885252153599],[37.3438502,-121.8831349]];
+      var waypoints = [{ coords: [37.5482697, -121.9885719], email: 'Jonathan@gmail.com'},[37.8044557, -122.2713563],[37.431359,-121.885252153599],[37.3438502,-121.8831349]];
 
       // takes an array of waypoints and returns a new array of objects
       // used to generate data for route graphic display
