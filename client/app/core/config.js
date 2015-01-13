@@ -33,14 +33,6 @@ angular
       }
     })
     .state('trip', {
-      resolve: {
-        tripData: function ($stateParams, $http) {
-          return $http.get('/api/trip/' + $stateParams.id)
-            .then(function(response) {
-              return response.data;
-          });
-        }  
-      },
       abstract: true,
       url: '/trip/:id',
       views: {

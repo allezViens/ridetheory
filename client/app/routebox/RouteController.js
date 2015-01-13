@@ -6,22 +6,25 @@
     .controller('RouteCtrl', RouteCtrl);
 
     /* ngInject */
-    function RouteCtrl(tripData,GoogleFactory){
+    function RouteCtrl(GoogleFactory,RouteFactory,$stateParams){
       var vm = this;
 
-      var user = tripData.driver || tripData.passenger;
-      vm.date = user.date;
-      vm.origin = user.origin;
-      vm.destination = user.destination;
-      vm.id = user.id;
-      vm.picks = user.picks;
-      vm.init = initialize;
+      vm.initMap = initMap;
+
+      initialize();
 
       function initialize(){
-        GoogleFactory.setOrigin(vm.origin);
-        GoogleFactory.setDestin(vm.destination);
-        GoogleFactory.drawRoute(vm.origin, vm.destination);
+        RouteFactory.getTrip($stateParams.id)
+        .then(function(){
+          vm.trip = RouteFactory.tripData.driver || RouteFactory.tripData.passenger;
+        });
       };
+
+      function initMap() {
+        GoogleFactory.setOrigin(vm.trip.origin);
+        GoogleFactory.setDestin(vm.trip.destination);
+        GoogleFactory.drawRoute(vm.trip.origin, vm.trip.destination);    
+      }
   }
 })();
     
