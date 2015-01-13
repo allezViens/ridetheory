@@ -2,11 +2,11 @@
   'use strict';
   
   angular
-    .module('app.search')
-    .controller('Search', Search);
+    .module('app.postroute')
+    .controller('PostRouteCtrl', PostRouteCtrl);
 
     /* ngInject */
-    function Search($http, $state, RouteFactory, GoogleFactory){ 
+    function PostRouteCtrl($http, $state, RouteFactory, GoogleFactory){ 
       var vm = this;
 
       vm.setOrigin = setOrigin;
