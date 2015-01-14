@@ -27,6 +27,19 @@
 
     return RouteFactory;
 
+    function getTrip(token){
+       var data = { token: token };
+       return $http({
+         method: 'GET',
+         url: '/api/trip?',
+         params: { token: token }
+       }).success(function(data){
+         RouteFactory.tripData = data;
+       })
+    }
+
+
+
     function setOrigin(coordinates){
       RouteFactory.origin = coordinates;
     }
@@ -89,6 +102,7 @@
     }
 
     function createRoute(tripObject) {
+      console.log(tripObject);
       return $http({
         method: 'POST',
         url: '/api/' + tripObject.type,
@@ -97,7 +111,8 @@
       .success(function (data) {
         console.log(data);
       })
-      .error(function(){
+      .error(function(error){
+        console.log(error);
         console.log("could not create route");
       });     
     }
