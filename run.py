@@ -8,18 +8,6 @@ import customutilities
 
 app = Flask(__name__, static_folder='build', static_url_path='')
 
-
-# app.config.update(
-# 	#Comment out for production
-# 	# DEBUG=True,
-# 	#Email Settings
-# 	MAIL_SERVER='smtp.gmail.com',
-# 	MAIL_PORT=465,
-# 	MAIL_USE_SSL=True,
-# 	MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-# 	MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-# 	)
-
 app.config.update(
 	#Comment out for production
 	DEBUG = True,
