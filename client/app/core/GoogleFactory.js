@@ -4,14 +4,13 @@
     .module('app.core')
     .factory('GoogleFactory', GoogleFactory);
 
-  function GoogleFactory($http) {
+  function GoogleFactory($http,$q, RouterboxFactory, RouteFactory) {
     var map, directionsDisplay, overlayMap;
     var userMarkers = [];
     var tripMarkers = [undefined,undefined];
 
     services = {
       convertToLocation: convertToLocation,
-      routeWaypoints: [],
       initialized: false,
       initialize: initialize,
       setOrigin: setOrigin,
@@ -77,9 +76,10 @@
       map.fitBounds(bounds);
     }
 
-    function drawRoute(origin, destination, waypoints) {
+    function drawRoute(origin, destination, waypoints,callback) {
       var directionsService = new google.maps.DirectionsService();
       directionsDisplay.setMap(map);
+      console.log('way',waypoints);
 
       var request = {
         origin: convertToLocation(origin),
@@ -95,8 +95,15 @@
       directionsService.route(request, function(result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
           directionsDisplay.setDirections(result);
-          GoogleFactory.routeWaypoints = result;
-          console.log(GoogleFactory.routeWaypoints);
+          GoogleFactory.routeWaypoints = result.kc.waypoints;
+          GoogleFactory.routeOrder = result.routes[0].waypoint_order;
+          var waypoints = [];
+          for(var i=0;i < GoogleFactory.routeWaypoints.length;i++){
+            var waypoint = GoogleFactory.routeWaypoints[GoogleFactory.routeOrder[i]];
+            waypoints.push([waypoint.location.k,waypoint.location.D]);
+          }
+          GoogleFactory.routeWaypoints = waypoints;
+          callback(GoogleFactory.routeWaypoints);
         }
       });
     }

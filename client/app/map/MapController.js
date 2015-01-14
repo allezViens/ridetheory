@@ -17,5 +17,7 @@
 
     // Activate map
     GoogleFactory.initialize(37.7833,-122.4167);
+
+    
   }
 })();

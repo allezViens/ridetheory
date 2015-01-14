@@ -4,7 +4,7 @@
     .module('app.core')
     .factory('RouterboxFactory', RouterboxFactory);
 
-  function RouterboxFactory($http, $q){
+  function RouterboxFactory($http, $q,$timeout){
 
     var RouterboxFactory = {
       reverseGeocode: reverseGeocode,
@@ -31,9 +31,9 @@
         // convert origin to address
         var deferred = $q.defer();
 
-        waypoints.forEach(function (waypoint, index, cb) {
-          matches.forEach(function (user) {
-            if (compare(waypoint, user.origin) && user.status === "confirmed") {
+        angular.forEach(waypoints,function (waypoint, index, cb) {
+          angular.forEach(matches.matches,function (user) {
+            if (compare(waypoint, user.origin)) {
               RouterboxFactory.reverseGeocode(user.origin)
                 .success(function (data) {
                   $timeout(function () {
@@ -43,7 +43,7 @@
                 .error(function () {
                   console.log('reverseGeocode error!');
                 });
-            } else if (compare(waypoint, user.destination) && user.status === "confirmed") {
+            } else if (compare(waypoint, user.destination)) {
               RouterboxFactory.reverseGeocode(user.destination)
                 .success(function (data) {
                   $timeout(function () {
