@@ -68,16 +68,16 @@
       })
     }
 
-    function getMatches() {
+    function getMatches(origin,destination,date,type) {
       var trip = {
-        oLat: RouteFactory.origin[0], oLon: RouteFactory.origin[1],
-        dLat: RouteFactory.destination[0], dLon: RouteFactory.destination[1],
-        date: RouteFactory.date
+        oLat: origin[0], oLon: origin[1],
+        dLat: destination[0], dLon: destination[1],
+        date: date
       }
       return $http({
-        url: 'api/' + trip.type + '/matches',
+        url: 'api/passenger/matches',
         method: 'GET',
-        data: JSON.stringify(trip)
+        params: trip
       })
       .success(function (data) {
         RouteFactory.possibleMatches = data;
