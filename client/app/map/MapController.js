@@ -9,9 +9,13 @@
   function MapCtrl(GoogleFactory,RouteFactory) {
     var vm = this;
 
+    vm.sendMessage = function(){
+      console.log('hi');
+    }
+
     // when user clicks 
 
     // Activate map
-    GoogleFactory.initialize(55.6468, 37.581);
+    GoogleFactory.initialize(37.7833,-122.4167);
   }
 })();

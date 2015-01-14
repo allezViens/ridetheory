@@ -1,17 +1,17 @@
 
-  <form ng-model="trip" novalidate>
+  <form ng-model="vm.trip" novalidate>
     <div class="role">
       <img src="ride.png">
       <input 
         id="driver"
-        ng-model="trip.type" 
+        ng-model="vm.trip.type" 
         type="radio" 
         name="type" 
         value="driver">
       <label for="driver">Driver</label>
       <input 
         id="passenger"
-        ng-model="trip.type" 
+        ng-model="vm.trip.type" 
         type="radio" 
         name="type" 
         value="passenger">
@@ -21,53 +21,45 @@
     <div class="endpoints">
       <input 
         ng-autocomplete
-        ng-model="trip.originText"
-        details="trip.origin"
+        ng-model="vm.trip.originText"
+        details="vm.trip.origin"
         id="AutoComplete"
         type="text" 
         placeholder="Start"
         options="{country:'us'}"/>
-        <span 
-          ng-show="trip.origin.length" 
-          ng-click="trip.origin = '';vm.removeOrigin()"
-          class="clearInput">x</span>
       <input 
         ng-autocomplete
-        ng-model="trip.destinationText"
-        details="trip.destination"
+        ng-model="vm.trip.destinationText"
+        details="vm.trip.destination"
         id="AutoComplete"
         type="text" 
-        placeholder="Start"
+        placeholder="End"
         options="{country:'us'}"/> 
-        <span 
-          ng-show="trip.destination.length" 
-          ng-click="trip.destination = '';vm.removeDestination()"
-          class="clearInput">x</span>
     </div>
 
     <div class="date">
       <input 
-        ng-model="trip.date" 
+        ng-model="vm.trip.date" 
         type="date"/> 
     </div>
 
 
     <div class="email">
       <input 
-      ng-model="trip.email" 
+      ng-model="vm.trip.email" 
       type="email" 
       placeholder="name@email.com"/> 
     </div>
 
     <div class="alias">
       <input 
-      ng-model="trip.alias" 
+      ng-model="vm.trip.alias" 
       type="text" 
-      placeholder="Kung Fu Panda"/> 
+      placeholder="Alias"/> 
     </div>
 
     <button 
-      ng-click="vm.createRoute(trip)">Post Route
+      ng-click="vm.createRoute(vm.trip)">Post Route
     </button>  
 
   </div>

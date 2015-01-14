@@ -10,12 +10,15 @@
     var tripMarkers = [undefined,undefined];
 
     services = {
+      routeWaypoints: [],
+      initialized: false,
       initialize: initialize,
       setOrigin: setOrigin,
       setDestin: setDestin,
       removeOrigin: removeOrigin,
       removeDestination: removeDestination,
-      drawRoute: drawRoute
+      drawRoute: drawRoute,
+      addUserMarker: addUserMarker
     }
 
     return services;
@@ -91,8 +94,63 @@
       directionsService.route(request, function(result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
           directionsDisplay.setDirections(result);
+          console.log(result);
         }
       });
+    }
+
+    function addUserMarker(coordinate,alias){
+      var marker = new google.maps.Marker({
+        map: map,
+        icon: 'http://www.penceland.com/images/google_map_man.gif',
+        position: convertToLocation(coordinate),
+        draggable: false
+      });
+
+      userMarkers.push(marker);
+
+      var contentString = '<div ng-controller="MapCtrl"><h1>' + alias + '</h1><textarea type="text" placeholder="comment .."></textarea>\
+        <button ng-click="vm.sendMessage()">Send Message</button>\
+        <button ng-click="">Select passenger</button></div>';
+
+      alias = new InfoBubble({
+        map: map,
+        content: contentString,
+        position: convertToLocation(coordinate),
+        shadowStyle: 1,
+        padding: 0,
+        borderRadius: 0,
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        minWidth: 100,
+        maxWidth: 200,
+        minHeight: 100,
+        arrowSize: 1,
+        borderWidth: 0,
+        disableAutoPan: true,
+        hideCloseButton: false,
+        arrowPosition: -5,
+        backgroundClassName: 'bubble',
+        arrowStyle: 1
+      });
+
+      google.maps.event.addListener(marker, 'click', function() {
+        alias.isOpen() ? alias.close() : alias.open(map, marker);
+      });
+
+      google.maps.event.addListener(marker,'mouseover',function(){
+
+      })
+    }
+
+    function getMatchesArray(originCoords, destinationCoords){
+      return $http({
+        method: 'GET',
+        url: '/api/driver',
+        params: {
+          oLat: originCoords[0],
+          oLon: originCoords[1],
+        }
+      })
     }
 
     function messageUser(to,from,message) {
@@ -132,6 +190,7 @@
       overlayMap.setMap(map);
       directionsDisplay = new google.maps.DirectionsRenderer();
       directionsDisplay.setMap(map);
+      services.initialized = true;
     }
   }
 })();

@@ -6,52 +6,41 @@
     .controller('PostRouteCtrl', PostRouteCtrl);
 
     /* ngInject */
-    function PostRouteCtrl($http, $state, RouteFactory, GoogleFactory){ 
+    function PostRouteCtrl($http, $state, RouteFactory, GoogleFactory, $scope){ 
       var vm = this;
 
-      vm.setOrigin = setOrigin;
-      vm.setDestination = setDestination;
       vm.searchRoute = searchRoute;
       vm.createRoute = createRoute;
       vm.removeDestination = removeDestination;
       vm.removeOrigin = removeOrigin;
 
-      function setOrigin(coordinates) {
-        if (place){
-          RouteFactory.setOrigin(place)
-          .then(function(){
-            vm.originLatLon = RouteFactory.origin;
-            GoogleFactory.setOrigin(vm.originLatLon);
-            if(RouteFactory.origin && RouteFactory.destination){
-             GoogleFactory.drawRoute(vm.originLatLon,vm.destinationLatLon);
-            }
-          });
-        }
-      }
 
-      function setDestination(place) {
-        if (place) {
-         RouteFactory.setDestination(place)
-         .then(function(){
-           vm.destinationLatLon = RouteFactory.destination;
-           GoogleFactory.setDestin(vm.destinationLatLon);
-           if(RouteFactory.origin && RouteFactory.destination){
-            GoogleFactory.drawRoute(vm.originLatLon,vm.destinationLatLon);
-           }
-         }) 
+      $scope.$watch('vm.trip.origin',function(collection){
+        if (collection){
+          var coordinates = [collection.geometry.location.k,collection.geometry.location.D];
+          GoogleFactory.setOrigin(coordinates);
+          if(vm.trip.origin && vm.trip.destination){
+            GoogleFactory.drawRoute([vm.trip.origin.geometry.location.k,vm.trip.origin.geometry.location.D],[vm.trip.destination.geometry.location.k,vm.trip.destination.geometry.location.D]);
+          }
         }
-      }
+      },false);
+
+      $scope.$watch('vm.trip.destination',function(collection){
+        if (collection){
+          var coordinates = [collection.geometry.location.k,collection.geometry.location.D];
+          GoogleFactory.setDestin(coordinates);
+          if(vm.trip.origin && vm.trip.destination){
+            GoogleFactory.drawRoute([vm.trip.origin.geometry.location.k,vm.trip.origin.geometry.location.D],[vm.trip.destination.geometry.location.k,vm.trip.destination.geometry.location.D]);
+          }
+        }
+      },false);
 
       function removeDestination(){
-        RouteFactory.removeDestination();
         GoogleFactory.removeDestination()
-        vm.destination = vm.destinationLatLon = null;
       }
 
       function removeOrigin(){
-        RouteFactory.removeOrigin();
         GoogleFactory.removeOrigin();
-        vm.origin = vm.originLatLon = null;
       }
 
       function createRoute(trip){
@@ -66,8 +55,8 @@
 
       function updateModel(trip){
         var obj = angular.copy(trip);
-        obj.origin = [trip.origin.geometry.location.k,trip.origin.geometry.location.D];
-        obj.destination = [trip.destination.geometry.location.k,trip.destination.geometry.location.D];
+        obj.origin = [vm.trip.origin.geometry.location.k,vm.trip.origin.geometry.location.D];
+        obj.destination = [vm.trip.destination.geometry.location.k,vm.trip.destination.geometry.location.D];
         obj.date = trip.date.toISOString();
         return obj;
       }
