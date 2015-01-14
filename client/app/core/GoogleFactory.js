@@ -10,6 +10,7 @@
     var tripMarkers = [undefined,undefined];
 
     services = {
+      convertToLocation: convertToLocation,
       routeWaypoints: [],
       initialized: false,
       initialize: initialize,
@@ -94,7 +95,8 @@
       directionsService.route(request, function(result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
           directionsDisplay.setDirections(result);
-          console.log(result);
+          GoogleFactory.routeWaypoints = result;
+          console.log(GoogleFactory.routeWaypoints);
         }
       });
     }
