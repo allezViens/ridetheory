@@ -54,6 +54,7 @@
       }
 
       function updateModel(trip){
+
         var obj = angular.copy(trip);
         obj.origin = [vm.trip.origin.geometry.location.k,vm.trip.origin.geometry.location.D];
         obj.destination = [vm.trip.destination.geometry.location.k,vm.trip.destination.geometry.location.D];

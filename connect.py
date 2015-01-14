@@ -4,7 +4,7 @@ import sys
 import math
 import hashlib
 import time
-from communication import sendUserEmail
+  # from communication import sendUserEmail
 
 '''DATABASE INSERTION/UPDATE'''
 #Adds driver to database

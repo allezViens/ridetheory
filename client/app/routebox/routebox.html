@@ -1,10 +1,27 @@
 
-<h1>Routebox</h1>
+<!-- <img src="ride.png">
+ -->
+<div class="container">
+<div class="title"><h1>Route</h1></div>
+  <table>
+    <tr ng-repeat="waypoint in vm.route" class="fx-fade-down" ng-click="vm.remove(waypoint)">
+      <td> 
+        <div class="{{waypoint.type}}"> 
+            {{waypoint.alias}} 
+        </div>
+      </td>
+      <td>
+        <div>  {{ waypoint.address }} </div>
+      </td>
+    </tr>
+  </table>
+  <div>
+    <a class="twitter-share-button" href="https://twitter.com/share">
+      <img src="https://g.twimg.com/Twitter_logo_blue.png" height="20" width="20">
+    </a>
+  </div>
+</div>
 
-<p>{{ vm.trip.date }}</p>
-<p>{{ vm.trip.origin }}</p>
-<p>{{ vm.trip.destination }}</p>
-<p>{{ vm.trip.id }}</p>
-<p>{{ vm.trip.picks }}</p>
-
-<button ng-click="vm.initMap()">Init map</button>
+<script type="text/javascript">
+window.twttr=(function(d,s,id){var t,js,fjs=d.getElementsByTagName(s)[0];if(d.getElementById(id)){return}js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);return window.twttr||(t={_e:[],ready:function(f){t._e.push(f)}})}(document,"script","twitter-wjs"));
+</script>
