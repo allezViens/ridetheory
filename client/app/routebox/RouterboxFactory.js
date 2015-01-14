@@ -7,6 +7,7 @@
   function RouterboxFactory($http, $q,$timeout){
 
     var RouterboxFactory = {
+      compare: compare,
       addUserToRoute: addUserToRoute,
       reverseGeocode: reverseGeocode,
       route: route
@@ -15,7 +16,7 @@
     return RouterboxFactory;
 
       function compare (tupleA, tupleB) {
-        return (tupleA[0] === tupleB[0] && tupleA[1] === tupleB[1]) ? true : false;
+        return (tupleA[0] === tupleB[0] && tupleA[1] === tupleB[1]);
       }
 
       // Dummy data
@@ -87,7 +88,6 @@
 
     // returns an object with latitude and longitude
     function reverseGeocode(coordinates) {
-      console.log(coordinates);
       var baseURL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
       var key = "AIzaSyCGv1yOax6sOABKLyT6r9Fu5khXoTPlDfs";
       var url = baseURL + coordinates[0] + ',' + coordinates[1] + '&key=' + key;

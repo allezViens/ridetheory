@@ -79,7 +79,6 @@
     function drawRoute(origin, destination, waypoints,callback) {
       var directionsService = new google.maps.DirectionsService();
       directionsDisplay.setMap(map);
-      console.log('way',waypoints);
 
       var request = {
         origin: convertToLocation(origin),

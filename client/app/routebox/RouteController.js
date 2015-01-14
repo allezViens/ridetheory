@@ -19,7 +19,7 @@
 // waypoitn alias: "pass1"date: "2015-01-13T08:00:00.000Z"destination: Array[2]email: "pass1@gmail.com"origin: Array[2]
 
 
-      function createRoute (tripData,waypoints) {
+      function createRoute (tripData,waypoints,waypointOrder) {
         vm.route = [];
 
         RouterboxFactory.reverseGeocode(tripData.origin)
@@ -27,27 +27,37 @@
           // add Start
           vm.route.push({type: 'origin', alias: 'Start', address: data.results[0].formatted_address});             
           
+          angular.forEach(waypointOrder,function(tuple,index){
+            console.log(waypointOrder);
+            angular.forEach(waypoints,function(user){
+              if (RouterboxFactory.compare(tuple,user.origin)) {
+                  //determin order of tuples. 
+                  RouterboxFactory.reverseGeocode(user.origin)
+                  .success(function (data) {
+                    $timeout(function () {
+                      vm.route.push({type: 'origin', alias: user.alias, address: data.results[0].formatted_address});
+                    }, index * 75);
+                  })
+                  .error(function () {
+                    console.log('reverseGeocode error!');
+                  });
+              }
+
+              if (RouterboxFactory.compare(tuple,user.destination)) {
+                RouterboxFactory.reverseGeocode(user.destination)
+                .success(function (data) {
+                  $timeout(function () {
+                    vm.route.push({type: 'destination', alias: user.alias, address: data.results[0].formatted_address});
+                  }, index * 75);
+                })
+                .error(function () {
+                  console.log('reverseGeocode error!');
+                });
+              }
+          });
+        });
           // add Waypoints if waypoints is given
-          angular.forEach(waypoints,function(user,index){
-            RouterboxFactory.reverseGeocode(user.origin)
-            .success(function (data) {
-              $timeout(function () {
-                vm.route.push({type: 'origin', alias: user.alias, address: data.results[0].formatted_address});
-              }, index * 75);
-            })
-            .error(function () {
-              console.log('reverseGeocode error!');
-            });  
-            RouterboxFactory.reverseGeocode(user.destination)
-            .success(function (data) {
-              $timeout(function () {
-                vm.route.push({type: 'destination', alias: user.alias, address: data.results[0].formatted_address});
-              }, index * 75);
-            })
-            .error(function () {
-              console.log('reverseGeocode error!');
-            });          
-          }); 
+          
 
 
           RouterboxFactory.reverseGeocode(tripData.destination)
@@ -55,7 +65,7 @@
             // add End
             $timeout(function() {
               vm.route.push({type: 'destination', alias: 'End', address: data.results[0].formatted_address});              
-            }, 700);
+            }, 2000);
           });     
         });
       }
@@ -67,20 +77,22 @@
           RouteFactory.getMatches(vm.trip.origin,vm.trip.destination,vm.trip.date,'driver')
           .then(function(){
             vm.possibleMatches = RouteFactory.possibleMatches.matches;
-            initMap();
+            regenerateRoute();
           })
         });
       }
 
-      function initMap() {
+      function regenerateRoute() {
         GoogleFactory.setOrigin(vm.trip.origin);
         GoogleFactory.setDestin(vm.trip.destination);
 
         var mapWaypoints = [], routeBox = [];
         // for each object in the vm.trip.picks
         angular.forEach(vm.trip.picks,function(match){
+          console.log(match);
           // if object.status === 'CONFIRMED' get request to object.id 
             angular.forEach(vm.possibleMatches,function(possible){
+              console.log(possible);
               if (possible.email === match.id){
                   //add to map
                 mapWaypoints.push({
@@ -97,18 +109,27 @@
             });
         });
         GoogleFactory.drawRoute(vm.trip.origin,vm.trip.destination,mapWaypoints,function(data) {
-          console.log(data);
+          createRoute(vm.trip,routeBox,data);
         });
         angular.forEach(vm.possibleMatches,function(user){
           GoogleFactory.addUserMarker(user.origin,user.alias);
           GoogleFactory.addUserMarker(user.destination,user.alias);
         })
-        vm.trip = RouteFactory.tripData.driver || RouteFactory.tripData.passenger; 
-        createRoute(vm.trip,routeBox);
       }
 
-      function sendMessage () {
-        // 
+      function sendMessage() {
+        $http({
+          method: 'POST',
+          url: 'api/trip/picks',
+          data: {
+            token: $stateParams.id,
+            email: 'pass3@gmail.com',
+            pickType: 'add'
+          }
+        })
+        .success(function(){
+          initialize();
+        });
       }
   }
 })();
