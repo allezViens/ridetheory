@@ -118,7 +118,7 @@
 
       userMarkers.push(marker);
 
-      var contentString = '<div ng-controller="MapCtrl"><h1>' + alias + '</h1><textarea type="text" placeholder="comment .."></textarea>\
+      var contentString = '<div ng-controller="MapCtrl as vm"><h1>' + alias + '</h1><textarea type="text" placeholder="comment .."></textarea>\
         <button ng-click="vm.sendMessage()">Send Message</button>\
         <button ng-click="">Select passenger</button></div>';
 

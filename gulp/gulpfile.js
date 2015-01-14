@@ -63,6 +63,7 @@ gulp.task('bundle-js',['lint-js','createtemplates'],function(){
     .src(pkg.paths.src.js.concat([pkg.paths.dest + '/templates.js']))
     .pipe(plug.size({showFiles: true}))
     .pipe(plug.ngAnnotate({add: true, single_quotes:true}))
+    .pipe(plug.plumber())
     .pipe(plug.concat(pkg.name + '.min.js'))
     .pipe(plug.if(production, plug.uglify({mangle:true})))
     .pipe(gulp.dest(pkg.paths.dest))
