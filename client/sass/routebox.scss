@@ -1,8 +1,56 @@
+body {
+  background-color: #4EB9E6;
+  height: 100px;
+  padding: 0px;
+  margin: 0px;
+}
+
+td {
+  padding: 2px;
+  margin: 0px;
+  text-align: left;
+}
+
+tr {
+  cursor: pointer;
+}
+
+div {
+  text-align: left;
+}
+
 .routebox {
   float: left;
   width: 23%;
   padding: 1%;
   background-color: white;
+}
 
-  
+.origin {
+  height: 70px;
+  width: 70px;
+  border-radius: 35px;
+  background-color: #77cc33;
+  height: 70px;
+  line-height: 70px;
+  text-align: center;
+  color: white;
+  margin: 5px;
+}
+
+
+.destination {
+  height: 70px;
+  width: 70px;
+  border-radius: 35px;
+  background-color: #E45575;
+  height: 70px;
+  line-height: 70px;
+  text-align: center;
+  color: white;
+  margin: 5px;
+}
+
+.tweet {
+  text-align: center;
 }

@@ -23,6 +23,7 @@
     "angular-ui-router": "~0.2.13",
     "normalize.css": "~3.0.2",
     "underscore": "~1.7.0",
-    "ngAutocomplete": "~1.0.0"
+    "ngAutocomplete": "~1.0.0",
+    "ngFx": "~1.0.5"
   }
 }

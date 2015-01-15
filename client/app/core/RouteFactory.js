@@ -21,10 +21,24 @@
       getTrip: getTrip,
       addUser: addUser,
       removeOrigin: removeOrigin,
-      removeDestination: removeDestination
+      removeDestination: removeDestination,
+      reverseGeocode: reverseGeocode
     }
 
     return RouteFactory;
+
+    function getTrip(token){
+       var data = { token: token };
+       return $http({
+         method: 'GET',
+         url: '/api/trip?',
+         params: { token: token }
+       }).success(function(data){
+         RouteFactory.tripData = data;
+       })
+    }
+
+
 
     function setOrigin(coordinates){
       RouteFactory.origin = coordinates;
@@ -68,16 +82,16 @@
       })
     }
 
-    function getMatches() {
+    function getMatches(origin,destination,date,type) {
       var trip = {
-        oLat: RouteFactory.origin[0], oLon: RouteFactory.origin[1],
-        dLat: RouteFactory.destination[0], dLon: RouteFactory.destination[1],
-        date: RouteFactory.date
+        oLat: origin[0], oLon: origin[1],
+        dLat: destination[0], dLon: destination[1],
+        date: date
       }
       return $http({
-        url: 'api/' + trip.type + '/matches',
+        url: 'api/passenger/matches',
         method: 'GET',
-        data: JSON.stringify(trip)
+        params: trip
       })
       .success(function (data) {
         RouteFactory.possibleMatches = data;
@@ -88,6 +102,7 @@
     }
 
     function createRoute(tripObject) {
+      console.log(tripObject);
       return $http({
         method: 'POST',
         url: '/api/' + tripObject.type,
@@ -96,10 +111,22 @@
       .success(function (data) {
         console.log(data);
       })
-      .error(function(){
+      .error(function(error){
+        console.log(error);
         console.log("could not create route");
       });     
     }
+
+    // returns an object with latitude and longitude
+    function reverseGeocode(coordinates) {
+      var baseURL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
+      var key = "AIzaSyCGv1yOax6sOABKLyT6r9Fu5khXoTPlDfs";
+      var url = baseURL + coordinates[0] + ',' + coordinates[1] + '&key=' + key;
+      return $http({
+        method: 'GET',
+        url: url
+      });
+    }    
 
     function updateRoute(tripObject) {
       /* {token: "h128ab", origin: [1.9,22.1], destination: [3.3,4.5], 

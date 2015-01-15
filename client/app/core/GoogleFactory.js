@@ -4,18 +4,21 @@
     .module('app.core')
     .factory('GoogleFactory', GoogleFactory);
 
-  function GoogleFactory($http) {
+  function GoogleFactory($http,$q, $stateParams,RouterboxFactory, RouteFactory, $rootScope) {
     var map, directionsDisplay, overlayMap;
     var userMarkers = [];
     var tripMarkers = [undefined,undefined];
 
     services = {
+      convertToLocation: convertToLocation,
+      initialized: false,
       initialize: initialize,
       setOrigin: setOrigin,
       setDestin: setDestin,
       removeOrigin: removeOrigin,
       removeDestination: removeDestination,
-      drawRoute: drawRoute
+      drawRoute: drawRoute,
+      addUserMarker: addUserMarker
     }
 
     return services;
@@ -73,7 +76,7 @@
       map.fitBounds(bounds);
     }
 
-    function drawRoute(origin, destination, waypoints) {
+    function drawRoute(origin, destination, waypoints,callback) {
       var directionsService = new google.maps.DirectionsService();
       directionsDisplay.setMap(map);
 
@@ -91,8 +94,102 @@
       directionsService.route(request, function(result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
           directionsDisplay.setDirections(result);
+          GoogleFactory.routeWaypoints = result.kc.waypoints;
+          GoogleFactory.routeOrder = result.routes[0].waypoint_order;
+          var waypoints = [];
+          for(var i=0;i < GoogleFactory.routeWaypoints.length;i++){
+            var waypoint = GoogleFactory.routeWaypoints[GoogleFactory.routeOrder[i]];
+            waypoints.push([waypoint.location.k,waypoint.location.D]);
+          }
+          GoogleFactory.routeWaypoints = waypoints;
+          callback(GoogleFactory.routeWaypoints);
         }
       });
+    }
+
+    
+    function addUserMarker(coordinate,alias,email,origin){
+
+      iconOrigin = 'iconOrigin.png';
+      iconDestination = 'iconDestination.png';
+      icon = 'icon.png';
+
+      var marker = new google.maps.Marker({
+        map: map,
+        icon: icon,
+        position: convertToLocation(coordinate),
+        draggable: false,
+        customEmail: email,
+        customOrigin: origin
+      });
+
+
+      userMarkers.push(marker);
+      var contentString = '<div><h1>' + alias + '</h1></div>';
+
+      alias = new InfoBubble({
+        map: map,
+        content: contentString,
+        position: convertToLocation(coordinate),
+        shadowStyle: 1,
+        padding: 0,
+        borderRadius: 5,
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        minWidth: 100,
+        maxWidth: 200,
+        minHeight: 50,
+        arrowSize: 1,
+        borderWidth: 1,
+        disableAutoPan: true,
+        hideCloseButton: true,
+        arrowPosition: -5,
+        backgroundClassName: 'bubble',
+        arrowStyle: 1
+      });
+
+      google.maps.event.addListener(marker, 'click', function() {
+        // pickUser('tommyklon@gmail.com');
+        $rootScope.$broadcast('tripUpdated',marker.customEmail);
+      });
+
+      google.maps.event.addListener(marker,'mouseover',function(){
+        // alias.open(map,marker);
+        var markers = findMatchingMarker(marker.customEmail);
+        // alias.open(map,match);
+        markers.origin.setIcon(iconOrigin);
+        markers.destination.setIcon(iconDestination);
+      })
+
+      google.maps.event.addListener(marker, 'mouseout', function() {
+          var markers = findMatchingMarker(marker.customEmail);
+          markers.origin.setIcon(icon);
+          markers.destination.setIcon(icon);
+      });
+    }
+
+    function findMatchingMarker(email){
+      var markers = {};
+      for (var i=0;i<userMarkers.length;i++){
+        if(userMarkers[i].customEmail === email){
+          if(userMarkers[i].customOrigin){
+            markers.origin = userMarkers[i];
+          }else{
+            markers.destination = userMarkers[i];
+          }
+        }
+      }
+      return markers;
+    }
+
+    function getMatchesArray(originCoords, destinationCoords){
+      return $http({
+        method: 'GET',
+        url: '/api/' + vm.type,
+        params: {
+          oLat: originCoords[0],
+          oLon: originCoords[1],
+        }
+      })
     }
 
     function messageUser(to,from,message) {
@@ -132,6 +229,7 @@
       overlayMap.setMap(map);
       directionsDisplay = new google.maps.DirectionsRenderer();
       directionsDisplay.setMap(map);
+      services.initialized = true;
     }
   }
 })();

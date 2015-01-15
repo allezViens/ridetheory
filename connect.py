@@ -4,7 +4,7 @@ import sys
 import math
 import hashlib
 import time
-from communication import sendUserEmail
+from communication import sendPickNotificationEmail
 
 '''DATABASE INSERTION/UPDATE'''
 #Adds driver to database
@@ -196,7 +196,8 @@ def urlExists(url, validate):
 #     return True
 #   return False
 
-def sendMessage(to, sender, message, fromType):
+def sendMessage(to, sender, fromType):
+  print 'sendMEssage in connects'
   sent = True
   try:
     if(fromType[0].upper()=='D'):
@@ -205,7 +206,10 @@ def sendMessage(to, sender, message, fromType):
     else:
       driver = getDriver(to)
       url = driver.editURL
-    sendUserEmail(to,sender,message,url)
+    print 'url'
+    print url
+    print 'right before send pick notification email'
+    sendPickNotificationEmail(to,sender,url)
   except:
     sent = False
   finally:

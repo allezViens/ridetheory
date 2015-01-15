@@ -7,9 +7,11 @@ angular
 
   function config($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider){
 
-    $urlRouterProvider.otherwise('/');
+    // $urlRouterProvider.otherwise('/');
 
     $stateProvider
+
+
     .state('create', {
       abstract: true,
       url: '/',
@@ -41,7 +43,7 @@ angular
         }
       }
     })
-    .state('trip.subs',{
+    .state('trip.subs', {
       url: '',
       views: {
         'map@trip': {
@@ -53,7 +55,8 @@ angular
           controller: 'RouteCtrl as vm',
         }
       }
-    });
+    })
+
     $locationProvider.html5Mode(true);
   }
 }).call(this);
