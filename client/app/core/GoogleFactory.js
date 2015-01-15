@@ -108,19 +108,25 @@
       });
     }
 
-    function addUserMarker(coordinate,alias){
+    
+    function addUserMarker(coordinate,alias,email,origin){
+
+      iconOrigin = 'iconOrigin.png';
+      iconDestination = 'iconDestination.png';
+      icon = 'icon.png';
+
       var marker = new google.maps.Marker({
         map: map,
-        icon: 'http://www.penceland.com/images/google_map_man.gif',
+        icon: icon,
         position: convertToLocation(coordinate),
-        draggable: false
+        draggable: false,
+        customEmail: email,
+        customOrigin: origin
       });
 
-      userMarkers.push(marker);
 
-      var contentString = '<div ng-controller="MapCtrl"><h1>' + alias + '</h1><textarea type="text" placeholder="comment .."></textarea>\
-        <button ng-click="vm.sendMessage()">Send Message</button>\
-        <button ng-click="">Select passenger</button></div>';
+      userMarkers.push(marker);
+      var contentString = '<div><h1>' + alias + '</h1></div>';
 
       alias = new InfoBubble({
         map: map,
@@ -128,11 +134,11 @@
         position: convertToLocation(coordinate),
         shadowStyle: 1,
         padding: 0,
-        borderRadius: 0,
+        borderRadius: 5,
         backgroundColor: 'rgba(255,255,255,0.9)',
         minWidth: 100,
         maxWidth: 200,
-        minHeight: 100,
+        minHeight: 50,
         arrowSize: 1,
         borderWidth: 0,
         disableAutoPan: true,
@@ -147,8 +153,37 @@
       });
 
       google.maps.event.addListener(marker,'mouseover',function(){
-
+        // alias.open(map,marker);
+        var markers = findMatchingMarker(marker.customEmail);
+        // alias.open(map,match);
+        markers.origin.setIcon(iconOrigin);
+        markers.destination.setIcon(iconDestination);
       })
+
+      google.maps.event.addListener(marker, 'mouseout', function() {
+          var markers = findMatchingMarker(marker.customEmail);
+          markers.origin.setIcon(icon);
+          markers.destination.setIcon(icon);
+      });
+
+      google.maps.event.addListener(alias,'click',function(){
+        console.log('hi')
+      })
+
+    }
+
+    function findMatchingMarker(email){
+      var markers = {};
+      for (var i=0;i<userMarkers.length;i++){
+        if(userMarkers[i].customEmail === email){
+          if(userMarkers[i].customOrigin){
+            markers.origin = userMarkers[i];
+          }else{
+            markers.destination = userMarkers[i];
+          }
+        }
+      }
+      return markers;
     }
 
     function getMatchesArray(originCoords, destinationCoords){

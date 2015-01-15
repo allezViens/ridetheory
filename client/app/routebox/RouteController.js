@@ -75,8 +75,8 @@
           createRoute(RouteFactory.tripData.driver,data);
         });
         angular.forEach(vm.possibleMatches,function(user){
-          GoogleFactory.addUserMarker(user.origin,user.alias);
-          GoogleFactory.addUserMarker(user.destination,user.alias);
+          GoogleFactory.addUserMarker(user.origin,user.alias, user.email,true);
+          GoogleFactory.addUserMarker(user.destination,user.alias, user.email,false);
         })
         vm.trip = RouteFactory.tripData.driver || RouteFactory.tripData.passenger; 
         createRoute(vm.trip);
