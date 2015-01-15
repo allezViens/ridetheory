@@ -110,17 +110,25 @@
       });
     }
 
-    function addUserMarker(coordinate,alias){
+    
+    function addUserMarker(coordinate,alias,email,origin){
+
+      iconOrigin = 'iconOrigin.png';
+      iconDestination = 'iconDestination.png';
+      icon = 'icon.png';
+
       var marker = new google.maps.Marker({
         map: map,
-        icon: 'http://www.penceland.com/images/google_map_man.gif',
+        icon: icon,
         position: convertToLocation(coordinate),
-        draggable: false
+        draggable: false,
+        customEmail: email,
+        customOrigin: origin
       });
 
-      userMarkers.push(marker);
 
-      var contentString = '<h1>' + alias + '</h1>';
+      userMarkers.push(marker);
+      var contentString = '<div><h1>' + alias + '</h1></div>';
 
       alias = new InfoBubble({
         map: map,
@@ -128,12 +136,11 @@
         position: convertToLocation(coordinate),
         shadowStyle: 1,
         padding: 0,
-        borderRadius: 25,
+        borderRadius: 5,
         backgroundColor: 'rgba(255,255,255,0.9)',
         minWidth: 100,
-        maxWidth: 100,
-        maxHeight: 50,
-        minHeight: 100,
+        maxWidth: 200,
+        minHeight: 50,
         arrowSize: 1,
         borderWidth: 1,
         disableAutoPan: true,
@@ -149,28 +156,37 @@
       });
 
       google.maps.event.addListener(marker,'mouseover',function(){
-        alias.open(map, marker);
+        // alias.open(map,marker);
+        var markers = findMatchingMarker(marker.customEmail);
+        // alias.open(map,match);
+        markers.origin.setIcon(iconOrigin);
+        markers.destination.setIcon(iconDestination);
       })
 
-      google.maps.event.addListener(marker,'mouseout',function(){
-        alias.close(map, marker);
+      google.maps.event.addListener(marker, 'mouseout', function() {
+          var markers = findMatchingMarker(marker.customEmail);
+          markers.origin.setIcon(icon);
+          markers.destination.setIcon(icon);
+      });
+
+      google.maps.event.addListener(alias,'click',function(){
+        console.log('hi')
       })
 
     }
 
-    function pickUser(email) {
-      $http({
-        method: 'POST',
-        url: 'api/trip/picks',
-        data: {
-          token: $stateParams.id,
-          email: email,
-          pickType: 'add'
+    function findMatchingMarker(email){
+      var markers = {};
+      for (var i=0;i<userMarkers.length;i++){
+        if(userMarkers[i].customEmail === email){
+          if(userMarkers[i].customOrigin){
+            markers.origin = userMarkers[i];
+          }else{
+            markers.destination = userMarkers[i];
+          }
         }
-      })
-      .success(function(){
-        $rootScope.$emit('tripUpdated');
-      });
+      }
+      return markers;
     }
 
     function getMatchesArray(originCoords, destinationCoords){

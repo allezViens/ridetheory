@@ -6,7 +6,7 @@ import json
 import sys
 import customutilities
 
-app = Flask(__name__, static_folder='build', static_url_path='')
+app = Flask(__name__, static_folder='build/', static_url_path='')
 
 app.config.update(
 	#Comment out for production
@@ -16,8 +16,8 @@ app.config.update(
 	MAIL_SERVER = 'smtp.gmail.com',
 	MAIL_PORT = 465,
 	MAIL_USE_SSL = True,
-	MAIL_DEFAULT_SENDER = 'allezviens01@gmail.com',
-	MAIL_USERNAME = 'allezviens01@gmail.com',
+	MAIL_DEFAULT_SENDER = 'ridetheory.info@gmail.com',
+	MAIL_USERNAME = 'ridetheory.info@gmail.com',
 	MAIL_PASSWORD = 'swiftmanatee'
 	# MAIL_USERNAME = os.environ.get('MAIL_USERNAME'),
 	# MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
@@ -32,6 +32,8 @@ from communication import *
 #Places for people to go 
 @app.route('/')
 def root():
+	print 'root'
+	print app
 	return app.send_static_file('index.html')
 
 @app.route('/trip/<urlID>')
@@ -157,6 +159,7 @@ def tripPicks():
 			if (type=='D'):
 				if(data['pickType'][0].upper()=='A'):
 					pickPassenger(data['email'], info['email'], True)
+					sendMessage(data['email'], info['email'], 'D')
 					return 'Successful pick'
 				elif (data['pickType'][0].upper()=='D'):
 					pickPassenger(data['email'], info['email'], False)
@@ -166,6 +169,7 @@ def tripPicks():
 			if (type=='P'):
 				if(data['pickType'][0].upper()=='A'):
 					pickDriver(data['email'], info['email'], True)
+					sendMessage(data['email'], info['email'], 'P')
 					return 'Successful pick'
 				elif (data['pickType'][0].upper()=='D'):
 					pickDriver(data['email'], info['email'], False)

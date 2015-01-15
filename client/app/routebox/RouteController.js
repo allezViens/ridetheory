@@ -120,8 +120,8 @@
           createRoute(vm.trip,routeBox,data);
         });
         angular.forEach(vm.possibleMatches,function(user){
-          GoogleFactory.addUserMarker(user.origin,user.alias);
-          GoogleFactory.addUserMarker(user.destination,user.alias);
+          GoogleFactory.addUserMarker(user.origin,user.alias, user.email,true);
+          GoogleFactory.addUserMarker(user.destination,user.alias, user.email,false);
         })
       }
   }
