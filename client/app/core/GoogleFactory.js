@@ -149,8 +149,7 @@
 
       google.maps.event.addListener(marker, 'click', function() {
         // pickUser('tommyklon@gmail.com');
-        $rootScope.$emit('tripUpdated');
-        console.log(marker.customEmail);
+        $rootScope.$broadcast('tripUpdated',marker.customEmail);
       });
 
       google.maps.event.addListener(marker,'mouseover',function(){

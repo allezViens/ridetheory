@@ -7,15 +7,18 @@
     <tr ng-repeat="waypoint in vm.route" class="fx-fade-down" ng-click="vm.remove(waypoint)">
       <td> 
         <div class="{{waypoint.type}}"> 
-            {{waypoint.alias}} 
+            {{waypoint.waypointLabel}} 
         </div>
       </td>
       <td>
-        <div>  {{ waypoint.address }} </div>
+        <div>  
+          <b>{{ waypoint.alias }}</b><br>
+          {{ waypoint.address }} 
+        </div>
       </td>
     </tr>
   </table>
-  <div>
+  <div class="tweet">
     <a class="twitter-share-button" href="https://twitter.com/share">
       <img src="https://g.twimg.com/Twitter_logo_blue.png" height="20" width="20">
     </a>
