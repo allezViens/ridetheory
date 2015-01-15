@@ -41,10 +41,8 @@
                 .success(function (data) {
                   $timeout(function () {
                     alphabetCode ++;
-                    console.log('origin start',alphabetCode);
                     var alphabetOrigin = String.fromCharCode(alphabetCode);
                     vm.route.push({type: 'origin', alias: user.alias, waypointLabel: alphabetOrigin, address: data.results[0].formatted_address});
-                    console.log('origin end',alphabetCode);
                   }, index * 75);
 
                 })
@@ -57,12 +55,10 @@
               if (RouterboxFactory.compare(tuple,user.destination)) {
                 RouterboxFactory.reverseGeocode(user.destination)
                 .success(function (data) {
-                  console.log('destination start',alphabetCode);
                   $timeout(function () {
                   alphabetCode++;
                   var alphabetDest = String.fromCharCode(alphabetCode);
                     vm.route.push({type: 'destination', alias: user.alias, waypointLabel: alphabetDest, address: data.results[0].formatted_address});
-                    console.log('destination end',alphabetCode);
                   }, index * 75);
                 })
                 .error(function () {
