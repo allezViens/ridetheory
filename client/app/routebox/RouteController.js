@@ -28,7 +28,6 @@
           vm.route.push({type: 'origin', alias: 'Start', address: data.results[0].formatted_address});             
           
           angular.forEach(waypointOrder,function(tuple,index){
-            console.log(waypointOrder);
             angular.forEach(waypoints,function(user){
               if (RouterboxFactory.compare(tuple,user.origin)) {
                   //determin order of tuples. 
@@ -94,10 +93,8 @@
         var mapWaypoints = [], routeBox = [];
         // for each object in the vm.trip.picks
         angular.forEach(vm.trip.picks,function(match){
-          console.log(match);
           // if object.status === 'CONFIRMED' get request to object.id 
             angular.forEach(vm.possibleMatches,function(possible,index){
-              console.log(possible);
               if (possible.email === match.id){
                   //add to map
                 mapWaypoints.push({
@@ -108,10 +105,7 @@
                   location: GoogleFactory.convertToLocation(possible.destination),
                   stopover:true
                 });
-
                 vm.possibleMatches.splice(index,1);
-
-
                 routeBox.push(possible);
               }
             });

@@ -8,10 +8,8 @@
     var map, directionsDisplay, overlayMap;
     var userMarkers = [];
     var tripMarkers = [undefined,undefined];
-    var clicks = [];
 
     services = {
-      clicks: clicks,
       convertToLocation: convertToLocation,
       initialized: false,
       initialize: initialize,
@@ -20,8 +18,7 @@
       removeOrigin: removeOrigin,
       removeDestination: removeDestination,
       drawRoute: drawRoute,
-      addUserMarker: addUserMarker,
-      pickUser: pickUser
+      addUserMarker: addUserMarker
     }
 
     return services;
@@ -153,6 +150,7 @@
       google.maps.event.addListener(marker, 'click', function() {
         // pickUser('tommyklon@gmail.com');
         $rootScope.$emit('tripUpdated');
+        console.log(marker.customEmail);
       });
 
       google.maps.event.addListener(marker,'mouseover',function(){
@@ -168,11 +166,6 @@
           markers.origin.setIcon(icon);
           markers.destination.setIcon(icon);
       });
-
-      google.maps.event.addListener(alias,'click',function(){
-        console.log('hi')
-      })
-
     }
 
     function findMatchingMarker(email){
