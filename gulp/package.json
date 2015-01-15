@@ -36,6 +36,7 @@
   "paths": {
     "src": {
       "images" :"../client/images/*",
+      "statics":"../client/statics/*",
       "client": "../client/",
       "index": "../client/index.html",
       "bower": "../client/bower_components/",
