@@ -4,12 +4,14 @@
     .module('app.core')
     .factory('GoogleFactory', GoogleFactory);
 
-  function GoogleFactory($http,$q, RouterboxFactory, RouteFactory) {
+  function GoogleFactory($http,$q, $stateParams,RouterboxFactory, RouteFactory, $rootScope) {
     var map, directionsDisplay, overlayMap;
     var userMarkers = [];
     var tripMarkers = [undefined,undefined];
+    var clicks = [];
 
     services = {
+      clicks: clicks,
       convertToLocation: convertToLocation,
       initialized: false,
       initialize: initialize,
@@ -18,7 +20,8 @@
       removeOrigin: removeOrigin,
       removeDestination: removeDestination,
       drawRoute: drawRoute,
-      addUserMarker: addUserMarker
+      addUserMarker: addUserMarker,
+      pickUser: pickUser
     }
 
     return services;
@@ -117,9 +120,7 @@
 
       userMarkers.push(marker);
 
-      var contentString = '<div ng-controller="MapCtrl as vm"><h1>' + alias + '</h1><textarea type="text" placeholder="comment .."></textarea>\
-        <button ng-click="vm.sendMessage()">Send Message</button>\
-        <button ng-click="">Select passenger</button></div>';
+      var contentString = '<h1>' + alias + '</h1>';
 
       alias = new InfoBubble({
         map: map,
@@ -127,33 +128,55 @@
         position: convertToLocation(coordinate),
         shadowStyle: 1,
         padding: 0,
-        borderRadius: 0,
+        borderRadius: 25,
         backgroundColor: 'rgba(255,255,255,0.9)',
         minWidth: 100,
-        maxWidth: 200,
+        maxWidth: 100,
+        maxHeight: 50,
         minHeight: 100,
         arrowSize: 1,
-        borderWidth: 0,
+        borderWidth: 1,
         disableAutoPan: true,
-        hideCloseButton: false,
+        hideCloseButton: true,
         arrowPosition: -5,
         backgroundClassName: 'bubble',
         arrowStyle: 1
       });
 
       google.maps.event.addListener(marker, 'click', function() {
-        alias.isOpen() ? alias.close() : alias.open(map, marker);
+        // pickUser('tommyklon@gmail.com');
+        $rootScope.$emit('tripUpdated');
       });
 
       google.maps.event.addListener(marker,'mouseover',function(){
-
+        alias.open(map, marker);
       })
+
+      google.maps.event.addListener(marker,'mouseout',function(){
+        alias.close(map, marker);
+      })
+
+    }
+
+    function pickUser(email) {
+      $http({
+        method: 'POST',
+        url: 'api/trip/picks',
+        data: {
+          token: $stateParams.id,
+          email: email,
+          pickType: 'add'
+        }
+      })
+      .success(function(){
+        $rootScope.$emit('tripUpdated');
+      });
     }
 
     function getMatchesArray(originCoords, destinationCoords){
       return $http({
         method: 'GET',
-        url: '/api/driver',
+        url: '/api/' + vm.type,
         params: {
           oLat: originCoords[0],
           oLon: originCoords[1],

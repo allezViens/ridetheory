@@ -7,14 +7,14 @@
 
     /* ngInject */
 
-    function RouteCtrl(GoogleFactory,RouteFactory,RouterboxFactory, $stateParams, $q, $timeout, $http){
+    function RouteCtrl(GoogleFactory,RouteFactory,RouterboxFactory, $scope, $rootScope, $stateParams, $q, $timeout, $http){
       var vm = this;
-      vm.route = [ ];
+      vm.route = [];
       vm.matches = RouteFactory.possibleMatches.matches;
       vm.waypoints = GoogleFactory.routeWaypoints;
-      vm.sendMessage = sendMessage;
 
       initialize();
+      $rootScope.$on('tripUpdated',console.log('trip updated from ctrl'));
 
 // waypoitn alias: "pass1"date: "2015-01-13T08:00:00.000Z"destination: Array[2]email: "pass1@gmail.com"origin: Array[2]
 
@@ -74,13 +74,18 @@
         RouteFactory.getTrip($stateParams.id)
         .then(function(){
           vm.trip = RouteFactory.tripData.driver || RouteFactory.tripData.passenger;
+          vm.type = RouteFactory.tripData.driver ? 'driver' : 'passenger';
           RouteFactory.getMatches(vm.trip.origin,vm.trip.destination,vm.trip.date,'driver')
           .then(function(){
             vm.possibleMatches = RouteFactory.possibleMatches.matches;
             regenerateRoute();
           })
         });
+
+        
       }
+
+
 
       function regenerateRoute() {
         GoogleFactory.setOrigin(vm.trip.origin);
@@ -91,7 +96,7 @@
         angular.forEach(vm.trip.picks,function(match){
           console.log(match);
           // if object.status === 'CONFIRMED' get request to object.id 
-            angular.forEach(vm.possibleMatches,function(possible){
+            angular.forEach(vm.possibleMatches,function(possible,index){
               console.log(possible);
               if (possible.email === match.id){
                   //add to map
@@ -104,6 +109,9 @@
                   stopover:true
                 });
 
+                vm.possibleMatches.splice(index,1);
+
+
                 routeBox.push(possible);
               }
             });
@@ -115,21 +123,6 @@
           GoogleFactory.addUserMarker(user.origin,user.alias);
           GoogleFactory.addUserMarker(user.destination,user.alias);
         })
-      }
-
-      function sendMessage() {
-        $http({
-          method: 'POST',
-          url: 'api/trip/picks',
-          data: {
-            token: $stateParams.id,
-            email: 'pass3@gmail.com',
-            pickType: 'add'
-          }
-        })
-        .success(function(){
-          initialize();
-        });
       }
   }
 })();
