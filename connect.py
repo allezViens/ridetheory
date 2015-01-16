@@ -27,12 +27,6 @@ def addPassenger(id, alias, oLat, oLon, dLat, dLon, date):
 def pickDriver(driverID, passengerID, add):
   driver = getDriver(driverID)
   passenger = getPassenger(passengerID)
-  #Toggle pick based on whether driver is already in passenger's picks
-  #currentPicks = findPassengerPicks(passengerID)
-  # if (driver in currentPicks):
-  #   passenger.unpick(driver)
-  # else:
-  #   passenger.pick(driver) 
   if(add):
     passenger.pick(driver)
   else:
@@ -43,11 +37,6 @@ def pickDriver(driverID, passengerID, add):
 def pickPassenger(passengerID, driverID, add):
   passenger = getPassenger(passengerID)
   driver = getDriver(driverID)
-  # currentPicks = findDriverPicks(driverID)
-  # if (passenger in currentPicks):
-  #   driver.unpick(passenger)
-  # else:
-  #   driver.pick(passenger)
   if(add):
     driver.pick(passenger)
   else:
@@ -118,12 +107,14 @@ def findMatchableDrivers(oLat, oLon, dLat, dLon, date):
     minLon, maxLon = min(drivers[i].oLon, drivers[i].dLon), max(drivers[i].oLon, drivers[i].dLon)
     if (minLat <= oLat <= maxLat and minLat <= dLat <= maxLat):
       if (minLon <= oLon <= maxLon and minLon <= dLon <= maxLon):
-        res.append(drivers[i])
+        if(sameDirection(oLat,oLon,dLat,dLon,drivers[i].oLat,drivers[i].oLon,drivers[i].dLat,drivers[i].dLon)):
+          res.append(drivers[i])
   return formatResults(res)
 
 #Returns all passengers within given bound box and same date
 #PARAMS: Driver's origin and destination coordinates
 def findMatchablePassengers(oLat, oLon, dLat, dLon, date):
+  res = []
   minLat, maxLat = min(oLat, dLat), max(oLat, dLat)
   minLon, maxLon = min(oLon, dLon), max(oLon, dLon)
   maxLat, minLon = makeBuffer(maxLat,minLon, 5, "NW") 
@@ -133,7 +124,10 @@ def findMatchablePassengers(oLat, oLon, dLat, dLon, date):
     Passenger.dLat >= minLat, Passenger.dLat <= maxLat,
     Passenger.oLon >= minLon, Passenger.oLon <= maxLon,
     Passenger.dLon >= minLon, Passenger.dLon <= maxLon).all()
-  return formatResults(passengers)
+  for i in range(len(passengers)):
+    if(sameDirection(oLat,oLon,dLat,dLon,passengers[i].oLat,passengers[i].oLon,passengers[i].dLat,passengers[i].dLon)):
+      res.append(passengers[i])
+  return formatResults(res)
 
 #Returns all picks by given driver
 def findDriverPicks(driverID):
@@ -183,18 +177,6 @@ def urlExists(url, validate):
     return True
   else:
     return False
-
-# def passengerUrlExists(url):
-#   match = Passenger.query.filter_by(editURL=url).all()
-#   if(len(match)>0):
-#     return True
-#   return False
-
-# def driverUrlExists(url):
-#   match = Driver.query.filter_by(editURL=url).all()
-#   if(len(match)>0):
-#     return True
-#   return False
 
 def sendMessage(to, sender, fromType):
   print 'sendMEssage in connects'
@@ -299,6 +281,14 @@ def makeBuffer(lat,lon,miles,direction):
   newLon = lon + math.atan2(math.sin(bearing)*math.sin(angularDirection)*math.cos(lat), math.cos(angularDirection)-math.sin(lat)*math.sin(newLat))
   
   return math.degrees(newLat), math.degrees(newLon)
+
+def sameDirection(oLat1,oLon1,dLat1,dLon1,oLat2,oLon2,dLat2,dLon2):
+  x1 = float(oLat1) - float(dLat1)
+  y1 = float(oLon1) - float(dLon1)
+  x2 = float(oLat2) - float(dLat2)
+  y2 = float(oLon2) - float(dLon2)
+  dot = x1*x2 + y1*y2
+  return dot>0
 
 def makeURL(id):
   id = id + time.strftime("%M%S")
