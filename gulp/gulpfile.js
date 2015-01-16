@@ -15,7 +15,7 @@ gutil.log( 'Building for ' + type);
 /*
  * `templatecache` has `bundle-js` as a dependency
  */
-gulp.task('default', ['bundle-css','templatecache','bundle-libs','index.html','images']);
+gulp.task('default', ['bundle-css','templatecache','bundle-libs','index.html','images','statics']);
 
 
 /*
@@ -91,6 +91,11 @@ gulp.task('bundle-libs',function(){
 
 gulp.task('images',function(){
   gulp.src(pkg.paths.src.images)
+    .pipe(gulp.dest(pkg.paths.dest));
+})
+
+gulp.task('statics',function(){
+  gulp.src(pkg.paths.src.statics)
     .pipe(gulp.dest(pkg.paths.dest));
 })
 

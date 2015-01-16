@@ -12,7 +12,7 @@ def sendValidationEmail(to, url):
 	header = 'Ride Theory Validation'
 	sender = 'verify@ridetheory.com'
 	replyTo = 'noreply@ridetheory.com'
-	url = 'allez-viens.herokuapp.com/trip/' + url
+	url = 'http://localhost:5000/trip/' + url
 	body = "Please click <a href='" + url + "'>this link</a> to validate and edit your route.</br> If you did not request this, please disregard this email."
 	sendEmail([to], replyTo, sender, header, body)
 
