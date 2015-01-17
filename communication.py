@@ -2,12 +2,12 @@ from flask.ext.mail import Mail, Message
 from run import mail
 # from run import app
 
-def sendUserEmail(to, replyTo, message, url):
-	header = 'Allez Viens User Contacted You'
-	sender = 'messages@allezviens.com'
-	url = 'allez-viens.herokuapp.com/trip/' + url
-	body = "You've recieved a message from a user at Allez Viens regarding <a href='" + url + "'>this route.</a> <br>" + message + "<br>Replying to this message will reply directly to the user." 
-	sendEmail([to], replyTo, sender, header, body)
+# def sendUserEmail(to, replyTo, message, url):
+# 	header = 'Allez Viens User Contacted You'
+# 	sender = 'messages@allezviens.com'
+# 	url = 'allez-viens.herokuapp.com/trip/' + url
+# 	body = "You've received a message from a user at Allez Viens regarding <a href='" + url + "'>this route.</a> <br>" + message + "<br>Replying to this message will reply directly to the user." 
+# 	sendEmail([to], replyTo, sender, header, body)
 
 def sendValidationEmail(to, url):
 	header = 'Allez Viens Validation'
@@ -32,3 +32,9 @@ def sendEmail(to, replyTo, sender, header, body):
 	# with app.app_context():
 	# 	mail.send(msg)
 
+def sendPickNotificationEmail(to, replyTo, url):
+	header = 'Allez Viens User Contacted You'
+	sender = 'messages@allezviens.com'
+	url = 'allez-viens.herokuapp.com/trip/' + url
+	body = "A user at Allez Viens has expressed interest in riding with you regarding <a href='" + url + "'>this route.</a> <br><br>Replying to this message will reply directly to the user." 
+	sendEmail([to], replyTo, sender, header, body)

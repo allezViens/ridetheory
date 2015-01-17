@@ -8,3 +8,4 @@ run.pyc
 /gulp/node_modules
 /build
 *.pyc
+/venv

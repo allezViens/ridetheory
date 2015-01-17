@@ -4,7 +4,7 @@ import sys
 import math
 import hashlib
 import time
-from communication import sendUserEmail
+from communication import sendPickNotificationEmail
 
 '''DATABASE INSERTION/UPDATE'''
 #Adds driver to database
@@ -183,18 +183,6 @@ def urlExists(url, validate):
     return True
   else:
     return False
-
-# def passengerUrlExists(url):
-#   match = Passenger.query.filter_by(editURL=url).all()
-#   if(len(match)>0):
-#     return True
-#   return False
-
-# def driverUrlExists(url):
-#   match = Driver.query.filter_by(editURL=url).all()
-#   if(len(match)>0):
-#     return True
-#   return False
 
 def sendMessage(to, sender, message, fromType):
   sent = True
