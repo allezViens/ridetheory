@@ -54,16 +54,18 @@ def pickPassenger(passengerID, driverID, add):
     driver.unpick(passenger)
   save()
 
-#Validates users
+#Validates driver
 def validateDriver(driverID):
   driver = getDriver(driverID)
   driver.validateDriver()
   save()
 
+#Validates passenger
 def validatePassenger(passengerID):
   passenger = getPassenger(passengerID)
   passenger.validatePassenger()
   save()
+
 
 def updatePassenger(passengerDict):
   passenger = getPassenger(passengerDict['email'])
@@ -73,6 +75,7 @@ def updateDriver(driverDict):
   driver = getDriver(driverDict['email'])
   return update(driver,driverDict)
 
+#Updates given model
 def update(model, dictionary):
   if(model != ''):
     model.oLat = dictionary['oLat']
@@ -109,6 +112,7 @@ def getPassenger(passengerID):
 
 
 #Returns all drivers that contain passenger route and same date
+#Identifies drivers whose boundary box contains the passenger's route
 #PARAMS: Passenger's origin and destination coordinates
 def findMatchableDrivers(oLat, oLon, dLat, dLon, date):
   drivers = Driver.query.filter(Driver.date == date).all()
@@ -122,6 +126,7 @@ def findMatchableDrivers(oLat, oLon, dLat, dLon, date):
   return formatResults(res)
 
 #Returns all passengers within given bound box and same date
+#Returns passengers whose coordinates are in the driver's boundary box
 #PARAMS: Driver's origin and destination coordinates
 def findMatchablePassengers(oLat, oLon, dLat, dLon, date):
   minLat, maxLat = min(oLat, dLat), max(oLat, dLat)
@@ -143,10 +148,6 @@ def findDriverPicks(driverID):
 def findPassengerPicks(passengerID):
   return getPassenger(passengerID).picks
 
-#TODO: Checks if both driver and passenger have picked each other
-def isReciprocal(driverID, passengerID):
-  return '' 
-
 #Returns object with user's email, origin, destination, and pick information
 def getInfoByUrl(url):
   match = Driver.query.filter_by(editURL=url).all()
@@ -161,16 +162,19 @@ def getInfoByUrl(url):
     return 'P', objectifyWithPickInfo(passenger, picks)
   return 'NA', False
 
+#Retrieves driver's info by email
 def getDriverInfo(email):
   driver = getDriver(email)
   picks = findDriverPicks(driver.email)
   return objectifyWithPickInfo(driver,picks)
 
+#Retrieves passenger's info by email
 def getPassengerInfo(email):
   passenger = getPassenger(email)
   picks = findPassengerPicks(passenger.email)
   return objectifyWithPickInfo(passenger,picks)
 
+#Validates existing urls
 def urlExists(url, validate):
   urlType, info = getInfoByUrl(url)
   if(urlType == 'P'):
@@ -184,6 +188,7 @@ def urlExists(url, validate):
   else:
     return False
 
+ 
 def sendMessage(to, sender, message, fromType):
   sent = True
   try:
@@ -193,7 +198,7 @@ def sendMessage(to, sender, message, fromType):
     else:
       driver = getDriver(to)
       url = driver.editURL
-    sendUserEmail(to,sender,message,url)
+    sendPickNotificationEmail(to, sender, url)
   except:
     sent = False
   finally:
@@ -216,6 +221,7 @@ def deletePassenger(id):
   return ''
 
 '''HELPER FUNCTIONS'''
+#Commits db session changes
 def save():
   print 'save function'
   for obj in db.session:
@@ -229,6 +235,7 @@ def save():
   finally:
     print 'after db.session.commit()'
 
+#Returns JSON-friendly data from a model array
 def formatResults(modelArray):
   res = []
   for i in range(len(modelArray)):
@@ -236,6 +243,7 @@ def formatResults(modelArray):
     res.append(objectify(modelArray[i]))
   return res
 
+#Pulls model data into JSON format
 def objectify(model):
   obj = {
     "email": model.email,
@@ -284,6 +292,7 @@ def makeBuffer(lat,lon,miles,direction):
   
   return math.degrees(newLat), math.degrees(newLon)
 
+#Generates unique hash for trip route urls
 def makeURL(id):
   id = id + time.strftime("%M%S")
   hash = hashlib.md5(id).hexdigest()
