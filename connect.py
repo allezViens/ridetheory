@@ -43,16 +43,18 @@ def pickPassenger(passengerID, driverID, add):
     driver.unpick(passenger)
   save()
 
-#Validates users
+#Validates driver
 def validateDriver(driverID):
   driver = getDriver(driverID)
   driver.validate()
   save()
 
+#Validates passenger
 def validatePassenger(passengerID):
   passenger = getPassenger(passengerID)
   passenger.validate()
   save()
+
 
 def updatePassenger(passengerDict):
   passenger = getPassenger(passengerDict['email'])
@@ -62,6 +64,7 @@ def updateDriver(driverDict):
   driver = getDriver(driverDict['email'])
   return update(driver,driverDict)
 
+#Updates given model
 def update(model, dictionary):
   if(model != ''):
     model.oLat = dictionary['oLat']
@@ -98,20 +101,24 @@ def getPassenger(passengerID):
 
 
 #Returns all drivers that contain passenger route and same date
+#Identifies drivers whose boundary box contains the passenger's route and are in same direction
 #PARAMS: Passenger's origin and destination coordinates
 def findMatchableDrivers(oLat, oLon, dLat, dLon, date):
+  #Query for all drivers then do post processing, no nice way to struture this query 
   drivers = Driver.query.filter(Driver.date == date).all()
   res = []
   for i in range(len(drivers)):
+    #Determining bounding box
     minLat, maxLat = min(drivers[i].oLat, drivers[i].dLat), max(drivers[i].oLat, drivers[i].dLat)
     minLon, maxLon = min(drivers[i].oLon, drivers[i].dLon), max(drivers[i].oLon, drivers[i].dLon)
     if (minLat <= oLat <= maxLat and minLat <= dLat <= maxLat):
       if (minLon <= oLon <= maxLon and minLon <= dLon <= maxLon):
-        if(sameDirection(oLat,oLon,dLat,dLon,drivers[i].oLat,drivers[i].oLon,drivers[i].dLat,drivers[i].dLon)):
+        if(sameDirection(oLat, oLon, dLat, dLon, drivers[i].oLat, drivers[i].oLon, drivers[i].dLat, drivers[i].dLon)):
           res.append(drivers[i])
   return formatResults(res)
 
 #Returns all passengers within given bound box and same date
+#Returns passengers whose coordinates are in the driver's boundary box and are in same direction 
 #PARAMS: Driver's origin and destination coordinates
 def findMatchablePassengers(oLat, oLon, dLat, dLon, date):
   res = []
@@ -124,8 +131,9 @@ def findMatchablePassengers(oLat, oLon, dLat, dLon, date):
     Passenger.dLat >= minLat, Passenger.dLat <= maxLat,
     Passenger.oLon >= minLon, Passenger.oLon <= maxLon,
     Passenger.dLon >= minLon, Passenger.dLon <= maxLon).all()
+  #Query does most of filtering, then check for same diretion
   for i in range(len(passengers)):
-    if(sameDirection(oLat,oLon,dLat,dLon,passengers[i].oLat,passengers[i].oLon,passengers[i].dLat,passengers[i].dLon)):
+    if(sameDirection(oLat, oLon, dLat, dLon, passengers[i].oLat, passengers[i].oLon, passengers[i].dLat, passengers[i].dLon)):
       res.append(passengers[i])
   return formatResults(res)
 
@@ -136,10 +144,6 @@ def findDriverPicks(driverID):
 #Returns all picks by given driver
 def findPassengerPicks(passengerID):
   return getPassenger(passengerID).picks
-
-#TODO: Checks if both driver and passenger have picked each other
-def isReciprocal(driverID, passengerID):
-  return '' 
 
 #Returns object with user's email, origin, destination, and pick information
 def getInfoByUrl(url):
@@ -155,16 +159,19 @@ def getInfoByUrl(url):
     return 'P', objectifyWithPickInfo(passenger, picks)
   return 'NA', False
 
+#Retrieves driver's info by email
 def getDriverInfo(email):
   driver = getDriver(email)
   picks = findDriverPicks(driver.email)
-  return objectifyWithPickInfo(driver,picks)
+  return objectifyWithPickInfo(driver, picks)
 
+#Retrieves passenger's info by email
 def getPassengerInfo(email):
   passenger = getPassenger(email)
   picks = findPassengerPicks(passenger.email)
-  return objectifyWithPickInfo(passenger,picks)
+  return objectifyWithPickInfo(passenger, picks)
 
+#Validates existing urls
 def urlExists(url, validate):
   urlType, info = getInfoByUrl(url)
   if(urlType == 'P'):
@@ -178,20 +185,16 @@ def urlExists(url, validate):
   else:
     return False
 
-def sendMessage(to, sender, fromType):
-  print 'sendMEssage in connects'
+def sendMessage(to, sender, message, fromType):
   sent = True
   try:
-    if(fromType[0].upper()=='D'):
+    if(fromType.upper().startsWith('D')):
       passenger = getPassenger(to)
       url = passenger.editURL
     else:
       driver = getDriver(to)
       url = driver.editURL
-    print 'url'
-    print url
-    print 'right before send pick notification email'
-    sendPickNotificationEmail(to,sender,url)
+    sendPickNotificationEmail(to, sender, url)
   except:
     sent = False
   finally:
@@ -214,26 +217,25 @@ def deletePassenger(id):
   return ''
 
 '''HELPER FUNCTIONS'''
+#Commits db session changes
 def save():
-  print 'save function'
-  for obj in db.session:
-    print obj
   try:
     db.session.commit()
   except:
     e = sys.exc_info()[0]
     print e
-    print 'Error in session D:'
+    print 'Error in session'
   finally:
-    print 'after db.session.commit()'
+    print 'After db.session.commit()'
 
+#Returns JSON-friendly data from a model array
 def formatResults(modelArray):
   res = []
   for i in range(len(modelArray)):
-    print 'in for loop'
     res.append(objectify(modelArray[i]))
   return res
 
+#Pulls model data into JSON format
 def objectify(model):
   obj = {
     "email": model.email,
@@ -261,7 +263,7 @@ def parseUserPicks(user, picks):
   return res
 
 #Adds buffer around location
-def makeBuffer(lat,lon,miles,direction):
+def makeBuffer(lat, lon, miles, direction):
   #This earth radius in miles may not be entirely accurate - there are various numbers and the earth is not a perfect sphere
   #for the case of a buffer though, probably doesn't really matter
   earthRadiusMiles = 3959
@@ -272,22 +274,22 @@ def makeBuffer(lat,lon,miles,direction):
 
   #cast as float or this breaks, because angular direction is a tiny tiny number 
   angularDirection = float(miles)/float(earthRadiusMiles)
-  if(direction=="NW"):
+  if(direction == "NW"):
     bearing = northwest
-  if(direction=="SE"):
+  if(direction == "SE"):
     bearing = southeast
 
-  newLat = math.asin(math.sin(lat)*math.cos(angularDirection)) + math.cos(lat)*math.sin(angularDirection)*math.cos(bearing)
-  newLon = lon + math.atan2(math.sin(bearing)*math.sin(angularDirection)*math.cos(lat), math.cos(angularDirection)-math.sin(lat)*math.sin(newLat))
+  newLat = math.asin(math.sin(lat) * math.cos(angularDirection)) + math.cos(lat) * math.sin(angularDirection) * math.cos(bearing)
+  newLon = lon + math.atan2(math.sin(bearing) * math.sin(angularDirection) * math.cos(lat), math.cos(angularDirection) - math.sin(lat) * math.sin(newLat))
   
   return math.degrees(newLat), math.degrees(newLon)
 
-def sameDirection(oLat1,oLon1,dLat1,dLon1,oLat2,oLon2,dLat2,dLon2):
+def sameDirection(oLat1, oLon1, dLat1, dLon1, oLat2, oLon2, dLat2, dLon2):
   x1 = float(oLat1) - float(dLat1)
   y1 = float(oLon1) - float(dLon1)
   x2 = float(oLat2) - float(dLat2)
   y2 = float(oLon2) - float(dLon2)
-  dot = x1*x2 + y1*y2
+  dot = x1 * x2 + y1 * y2
   return dot>0
 
 def makeURL(id):

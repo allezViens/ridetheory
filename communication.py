@@ -4,6 +4,7 @@ import os
 
 deploymentURL = os.environ.get("DEPLOYMENT_URL","http://localhost:5000")
 
+#Sends email notifying user about posted route
 def sendValidationEmail(to, url):
 	header = 'Ride Theory Validation'
 	sender = 'verify@ridetheory.com'
@@ -20,14 +21,16 @@ def sendPickNotificationEmail(to, replyTo, url):
 	body = "A user at Ride Theory has expressed interest in riding with you regarding <a href='" + url + "'>this route.</a> <br>Replying to this message will reply directly to the user." 
 	sendEmail([to], replyTo, sender, header, body)
 
+#Sends email notifying user about pick
+def sendPickNotificationEmail(to, replyTo, url):
+	header = 'Allez Viens User Contacted You'
+	sender = 'messages@allezviens.com'
+	url = 'allez-viens.herokuapp.com/trip/' + url
+	body = "A user at Allez Viens has expressed interest in riding with you regarding <a href='" + url + "'>this route.</a> <br><br>Replying to this message will reply directly to the user." 
+	sendEmail([to], replyTo, sender, header, body)
+
+#Sends email via smtp service using template 
 def sendEmail(to, replyTo, sender, header, body):
-	print 'send email'
-	print 'to'
-	print to
-	print 'reply to'
-	print replyTo
-	print 'sender'
-	print sender
 	msg = Message(
 		header,
 		recipients=to,
@@ -37,3 +40,7 @@ def sendEmail(to, replyTo, sender, header, body):
 	msg.body = "body"
 	msg.html = body
 	mail.send(msg)
+
+	#For Development, uncomment to use function from command line
+	# with app.app_context():
+	# 	mail.send(msg)
