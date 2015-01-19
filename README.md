@@ -36,7 +36,7 @@ From within the root directory:
 sudo npm install -g bower
 npm install
 bower install
-pip install Django==1.7.1
+pip install -r requirements.txt
 ```
 
 ### Running
@@ -51,5 +51,6 @@ Production
 python run.py
 ```
 ## Contributing
+
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
