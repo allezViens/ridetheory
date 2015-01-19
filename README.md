@@ -12,17 +12,13 @@ Ride Theory helps people share rides with each other, whether it's a short 15 mi
 
 ## Table of Contents
 
-1. [Usage](#Usage)
 1. [Requirements](#requirements)
 1. [Development](#development)
     1. [Installing Dependencies](#installing-dependencies)
+    2. [Running] (#running)
     1. [Tasks](#tasks)
 1. [Team](#team)
 1. [Contributing](#contributing)
-
-## Usage
-
-> Some usage instructions
 
 ## Requirements
 
@@ -30,8 +26,6 @@ Ride Theory helps people share rides with each other, whether it's a short 15 mi
 - Psycopg 2.5.x
 - Flask 0.10.x
 - Angular 1.3.x
-
-## Development
 
 ### Installing Dependencies
 
@@ -42,6 +36,18 @@ sudo npm install -g bower
 npm install
 bower install
 pip install Django==1.7.1
+```
+
+## Running
+Development
+```
+python run.py
+gulp 
+gulp watch
+```
+Production
+```
+python run.py
 ```
 
 ### Roadmap
