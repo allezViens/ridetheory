@@ -188,7 +188,7 @@ def urlExists(url, validate):
 def sendMessage(to, sender, message, fromType):
   sent = True
   try:
-    if(fromType.upper().startsWith('D')):
+    if(fromType.upper().startswith('D')):
       passenger = getPassenger(to)
       url = passenger.editURL
     else:

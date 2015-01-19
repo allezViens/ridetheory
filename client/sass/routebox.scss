@@ -1,8 +1,16 @@
 .routebox {
+  height: 100%;
+  z-index: 1;
+  position: relative;
   float: left;
-  width: 23%;
-  padding: 1%;
+  width: 270px;
+  // padding: 1%;
   background-color: white;
+  height: 100%;
+  -webkit-box-shadow: 0.5px 0 38.1px 0 rgba(220, 221, 222, 0.28);
+  -moz-box-shadow:    0.5px 0 38.1px 0 rgba(220, 221, 222, 0.28);
+  box-shadow:         0.5px 0 38.1px 0 rgba(220, 221, 222, 0.28);
+  
   td {
     padding: 2px;
     margin: 0px;
@@ -22,7 +30,7 @@
   height: 70px;
   width: 70px;
   border-radius: 35px;
-  background-color: #77cc33;
+  background-color: $green;
   height: 70px;
   line-height: 70px;
   text-align: center;
@@ -35,7 +43,7 @@
   height: 70px;
   width: 70px;
   border-radius: 35px;
-  background-color: #E45575;
+  background-color: $red;
   height: 70px;
   line-height: 70px;
   text-align: center;

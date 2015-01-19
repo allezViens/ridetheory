@@ -3,8 +3,7 @@
   z-index: 1;
   position: relative;
   float: left;
-  width: 21%;
-  max-width: 300px;
+  width: 270px;
   // padding: 1%;
   background-color: white;
   height: 100%;
@@ -14,9 +13,9 @@
   
   img {
     width: 100%;
-    &.name {
+    &.logo {
       width: 100%;
-      padding: 0 10%;
+      padding: 5% 5%;
     }
   }
 
@@ -85,7 +84,6 @@
       text-align: center;
       margin: 7% 0 3%;
 
-<<<<<<< HEAD
       label {
         img {
           cursor: pointer;
@@ -171,7 +169,7 @@
 
     .submit {
       text-align: center;
-      button[type=submit] {
+      button {
         margin: 0 auto;
         transform: rotate(90deg);
         font-size: 2rem;

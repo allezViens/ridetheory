@@ -8,17 +8,14 @@
   /* ngInject */
   function MapCtrl(GoogleFactory,RouteFactory,$scope, dataservice) {
     var vm = this;
-    $scope.sendMessage = function(){
-      console.log('hi');
-    };
 
-    vm.sendMessage = function(){
-      console.log('hi');
-    };
-
-    // when user clicks 
+    //dyanmically set map width
+    var panelWidth = document.getElementsByClassName('fixed-side')[0].offsetWidth;
+    var mapWidth = 'width:' + (window.innerWidth  - panelWidth) + 'px';
+    document.getElementsByClassName('map')[0].setAttribute("style",mapWidth);
 
     // Activate map
+    console.log('calling!');
     dataservice.getClientLoc();    
   }
 })();

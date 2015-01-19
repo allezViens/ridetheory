@@ -9,7 +9,6 @@
     function PostRouteCtrl($http, $state, RouteFactory, GoogleFactory, $scope){ 
       var vm = this;
 
-      vm.searchRoute = searchRoute;
       vm.createRoute = createRoute;
       vm.removeDestination = removeDestination;
       vm.removeOrigin = removeOrigin;
@@ -19,14 +18,15 @@
         firstDay: 1,
         minDate: new Date(),
         maxDate: new Date('2020-12-31'),
-        yearRange: [2000, 2020],
+        yearRange: [2015, 2020],
         bound: false,
         setDefaultDate: true,
         container: document.getElementsByClassName('date')[0]
       });
 
       $scope.$watch('vm.trip.origin',function(collection){
-        if (collection){
+        if (collection && collection.geometry){
+          console.log(collection);
           var coordinates = [collection.geometry.location.k,collection.geometry.location.D];
           GoogleFactory.setOrigin(coordinates);
           if(vm.trip.origin && vm.trip.destination){
@@ -36,7 +36,7 @@
       },false);
 
       $scope.$watch('vm.trip.destination',function(collection){
-        if (collection){
+        if (collection && collection.geometry){
           var coordinates = [collection.geometry.location.k,collection.geometry.location.D];
           GoogleFactory.setDestin(coordinates);
           if(vm.trip.origin && vm.trip.destination){
@@ -44,10 +44,6 @@
           }
         }
       },false);
-
-      function initialize() {
-        document.getElementById('datepicker').value = new Date();
-      }
 
       function removeDestination(){
         GoogleFactory.removeDestination()
@@ -58,33 +54,22 @@
       }
 
       function createRoute(trip){
-        console.log(trip);
-        // vm.trip = updateModel(trip);
-        // console.log(vm.trip);
-        // RouteFactory
-        // .createRoute(vm.trip)
-        // .then(function(){
-        //   window.location.href="/confirm.html";
-        // })
+        var newTrip = updateModel(trip);
+        RouteFactory
+        .createRoute(newTrip)
+        .then(function(){
+          window.location.href="/confirm.html";
+        })
       }
 
       function updateModel(trip){
         var obj = angular.copy(trip);
-        obj.origin = [vm.trip.origin.geometry.location.k,vm.trip.origin.geometry.location.D];
-        obj.destination = [vm.trip.destination.geometry.location.k,vm.trip.destination.geometry.location.D];
-        obj.date = obj.date ? trip.date.toISOString() : new Date().toISOString();
+        obj.type = trip.type ? trip.type : 'driver';
+        obj.origin = [trip.origin.geometry.location.k,trip.origin.geometry.location.D];
+        obj.destination = [trip.destination.geometry.location.k,trip.destination.geometry.location.D];
+        obj.date = obj.date ? new Date(obj.date).toISOString() : new Date().toISOString();
         return obj;
       }
-
-      // Rewrites origin and destination with actual lat/lon
-      function searchRoute(trip) {
-        RouteFactory
-          .searchRoute()
-          .then(function(data) {
-            console.log(data);
-        });
-      }
-
   }
 })();
     

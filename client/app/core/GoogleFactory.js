@@ -24,9 +24,9 @@
 
 
     function addUserMarker(coordinate, alias, email, origin) {
-      iconOrigin = 'iconOrigin.png';
-      iconDestination = 'iconDestination.png';
-      icon = 'icon.png';
+      iconOrigin = 'green.png';
+      iconDestination = 'red.png';
+      icon = 'yellow.png';
 
       var marker = new google.maps.Marker({
         map: map,
@@ -79,6 +79,7 @@
 
     function boundMap() {
       var bounds = new google.maps.LatLngBounds();
+      console.log('before:',map);
       angular.forEach(tripMarkers, function(marker){
         if(marker && marker.position){
           bounds.extend(marker.position);
@@ -121,13 +122,15 @@
           GoogleFactory.routeOrder = result.routes[0].waypoint_order;
           
           var waypoints = [];
-          for(var i=0; i < GoogleFactory.routeWaypoints.length; i++){
+          for(var i=0; GoogleFactory.routeWaypoints && i < GoogleFactory.routeWaypoints.length; i++){
             var waypoint = GoogleFactory.routeWaypoints[GoogleFactory.routeOrder[i]];
             waypoints.push([waypoint.location.k, waypoint.location.D]);
           }
 
           GoogleFactory.routeWaypoints = waypoints;
-          callback(GoogleFactory.routeWaypoints);
+          if (callback) {
+            callback(GoogleFactory.routeWaypoints);
+          }
         }
       });
     }
@@ -159,13 +162,14 @@
 
     function initialize(lat, lon) {
       var center = new google.maps.LatLng(lat, lon);
-      var mapStyles = [{"featureType":"landscape.natural", "elementType":"geometry.fill", "stylers":[{"visibility":"on"}, {"color":"#e0efef"}]}, {"featureType":"poi", "elementType":"geometry.fill", "stylers":[{"visibility":"on"},{"hue":"#1900ff"},{"color":"#c0e8e8"}]},{"featureType":"landscape.man_made", "elementType":"geometry.fill"},{"featureType":"road", "elementType":"geometry", "stylers":[{"lightness":100},{"visibility":"simplified"}]},{"featureType":"road", "elementType":"labels", "stylers":[{"visibility":"off"}]},{"featureType":"water", "stylers":[{"color":"#7dcdcd"}]},{"featureType":"transit.line", "elementType":"geometry", "stylers":[{"visibility":"on"}, {"lightness":700}]}];
+      var mapStyles = [{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"hue":"#000000"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"hue":"#000000"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"water","elementType":"all","stylers":[{"hue":"#000000"},{"saturation":-100},{"lightness":100},{"visibility":"on"}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"hue":"#D1D3D4"},{"saturation":-88},{"lightness":-7},{"visibility":"on"}]},{"featureType":"landscape","elementType":"labels","stylers":[{"hue":"#939598"},{"saturation":-91},{"lightness":-34},{"visibility":"on"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#414042"},{"saturation":-98},{"lightness":-60},{"visibility":"on"}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#E3EBE5"},{"saturation":-61},{"lightness":57},{"visibility":"off"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"hue":"#E3EBE5"},{"saturation":-100},{"lightness":57},{"visibility":"on"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"visibility":"off"}]},{"featureType":"administrative.country","elementType":"all","stylers":[{"hue":"#E3EBE5"},{"saturation":-100},{"lightness":81},{"visibility":"off"}]},{"featureType":"administrative.province","elementType":"all","stylers":[{"hue":"#E3EBE5"},{"saturation":-100},{"lightness":81},{"visibility":"off"}]},{"featureType":"administrative.locality","elementType":"geometry","stylers":[{"hue":"#FFFFFF"},{"saturation":0},{"lightness":100},{"visibility":"on"}]},{"featureType":"administrative.locality","elementType":"labels","stylers":[{"hue":"#939598"},{"saturation":2},{"lightness":59},{"visibility":"on"}]},{"featureType":"administrative.neighborhood","elementType":"labels","stylers":[{"hue":"#939598"},{"saturation":-100},{"lightness":16},{"visibility":"on"}]},{"featureType":"administrative.neighborhood","elementType":"all","stylers":[{"hue":"#939598"},{"saturation":-100},{"lightness":16},{"visibility":"on"}]},{"featureType":"administrative.land_parcel","elementType":"all","stylers":[{"hue":"#939598"},{"saturation":-100},{"lightness":16},{"visibility":"simplified"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"hue":"#939598"},{"saturation":-98},{"lightness":-8},{"visibility":"on"}]},{"featureType":"road.highway","elementType":"labels","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"hue":"#6D6E71"},{"saturation":-98},{"lightness":-43},{"visibility":"on"}]},{"featureType":"road.arterial","elementType":"labels","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"hue":"#000000"},{"saturation":-100},{"lightness":-100},{"visibility":"on"}]},{"featureType":"road.local","elementType":"labels","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]}];
       var mapOptions = {zoom: 10, center: center, mapTypeControl: false, mapTypeControlOptions: {mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']}, streetViewControl: false, panControl: false, zoomControl: true, zoomControlOptions: {style: google.maps.ZoomControlStyle.SMALL, position: google.maps.ControlPosition.RIGHT_BOTTOM}, scaleControl: true};
       // Instantiate map with styles
       document.getElementById('map-canvas').style.height = window.innerHeight + "px";
       map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);   
       map.mapTypes.set('map_style', new google.maps.StyledMapType(mapStyles, {name: "Styled Map"}));
       map.setMapTypeId('map_style');  
+      console.log('map',map);
 
       // Create bounds
       overlayMap = new google.maps.OverlayView();
@@ -208,6 +212,7 @@
         map: map
       });
       
+      console.log('tripmarkers',map);
       tripMarkers[position].setMap(map);
       boundMap();
     }

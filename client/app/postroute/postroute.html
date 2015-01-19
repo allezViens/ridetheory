@@ -1,10 +1,8 @@
 
-<img src="graph.png">
-<img class="name" src="ride.png">
+<img class="logo" src="logo.png">
 <p><b>No signups. No remembering passwords.</b> Let's get started.</p>
 
-<form name="route" ng-submit="vm.createRoute(vm.trip)" onload="document.getElementById('datepicker').value = new Date();" novalidate>
-
+<form name="route" novalidate>
     <div class="endpoints">
       <div class="icon"><div class="point">A</div></div>
       <input 
@@ -87,7 +85,7 @@
   
     <div class="submit">
       <button 
-        type="submit">⇧
+        type="button" ng-click="vm.createRoute(vm.trip)">⇧
       </button> 
     </div> 
 </form>

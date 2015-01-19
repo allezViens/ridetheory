@@ -34,13 +34,13 @@
          url: '/api/trip?',
          params: { token: token }
        })
-        // .success(function(data){
-        //   console.log('start test animation');
-        //  RouteFactory.tripData = data;
-        // })
-        // .error(function(status) {
-        //   console.log(status);
-        // })
+        .success(function(data){
+          console.log('start test animation');
+         RouteFactory.tripData = data;
+        })
+        .error(function(status) {
+          console.log(status);
+        })
     }
 
 
@@ -107,19 +107,11 @@
     }
 
     function createRoute(tripObject) {
-      console.log(tripObject);
       return $http({
         method: 'POST',
         url: '/api/' + tripObject.type,
         data: JSON.stringify(tripObject)
-      })
-      // .success(function (data) {
-      //   console.log(data);
-      // })
-      // .error(function(error){
-      //   console.log(error);
-      //   console.log("could not create route");
-      // });     
+      });    
     }
 
     // returns an object with latitude and longitude
