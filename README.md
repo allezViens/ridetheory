@@ -3,8 +3,6 @@
 ## Overview
 Ride Theory helps people share rides with each other, whether it's a short 15 min. ride or a trip across Europe.  We wanted our app to be easy and intuitive.  There is no log-in, no sign up.  Simply create a route, find people going the same way, and link up via email.  
 
-
-
 ## Team
 
   - __Product Owner__: Thomas Klonecke
@@ -29,10 +27,9 @@ Ride Theory helps people share rides with each other, whether it's a short 15 mi
 ## Requirements
 
 - Python 2.7.x
-- psycopg 2.5.x
+- Psycopg 2.5.x
 - Flask 0.10.x
 - Angular 1.3.x
-- etc
 
 ## Development
 
