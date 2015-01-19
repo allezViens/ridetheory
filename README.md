@@ -16,7 +16,6 @@ Ride Theory helps people share rides with each other, whether it's a short 15 mi
 1. [Development](#development)
     1. [Installing Dependencies](#installing-dependencies)
     2. [Running] (#running)
-    1. [Tasks](#tasks)
 1. [Team](#team)
 1. [Contributing](#contributing)
 
