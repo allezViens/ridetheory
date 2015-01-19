@@ -77,7 +77,6 @@
           .success(function(data){
             vm.trip = RouteFactory.tripData.driver || RouteFactory.tripData.passenger;
             vm.type = RouteFactory.tripData.driver ? 'driver' : 'passenger';
-            
             RouteFactory.getMatches(vm.trip.origin,vm.trip.destination,vm.trip.date,'driver')
               .success(function(){
                 vm.possibleMatches = RouteFactory.possibleMatches.matches;
@@ -87,6 +86,7 @@
       }
 
       function regenerateRoute() {
+        console.log(vm.trip.origin);
         GoogleFactory.setOrigin(vm.trip.origin);
         GoogleFactory.setDestin(vm.trip.destination);
 

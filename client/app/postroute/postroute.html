@@ -1,68 +1,93 @@
 
-  <form ng-model="vm.trip" novalidate>
-    <div class="role">
-      <img src="ride.png">
-      <input 
-        id="driver"
-        ng-model="vm.trip.type" 
-        type="radio" 
-        name="type" 
-        value="driver">
-      <label for="driver">Driver</label>
-      <input 
-        id="passenger"
-        ng-model="vm.trip.type" 
-        type="radio" 
-        name="type" 
-        value="passenger">
-      <label for="passenger">Passenger</label>
-    </div>
+<img class="logo" src="logo.png">
+<p><b>No signups. No remembering passwords.</b> Let's get started.</p>
 
+<form name="route" novalidate>
     <div class="endpoints">
+      <div class="icon"><div class="point">A</div></div>
       <input 
+        id="origin"
         ng-autocomplete
         ng-model="vm.trip.originText"
         details="vm.trip.origin"
-        id="AutoComplete"
         type="text" 
-        placeholder="Start"
-        options="{country:'us'}"/>
+        options="{country:'us',watchEnter:true}"
+        placeholder="Starting at .."
+        ng-class="{ filled : vm.trip.originText}"
+        required/>
+<!--         <label 
+        for="origin">Where's this trip start?</label> -->
+      <div class="icon"><div class="point b">B</div></div>
       <input 
+        id="destination"
         ng-autocomplete
         ng-model="vm.trip.destinationText"
         details="vm.trip.destination"
-        id="AutoComplete"
         type="text" 
-        placeholder="End"
-        options="{country:'us'}"/> 
+        options="{country:'us',watchEnter:true}"
+        placeholder="Where are we going?"
+        ng-class="{ filled : vm.trip.destinationText}"
+        required/> 
+<!--         <label 
+        for="destination">Where are we going?</label> -->
     </div>
 
-    <div class="date">
-      <input 
-        ng-model="vm.trip.date" 
-        type="date"/> 
+    <div class="role">
+      <label>
+        <input 
+          id="driver"
+          ng-model="vm.trip.type" 
+          type="radio" 
+          name="type" 
+          value="driver"
+          ng-required="!vm.trip.type"
+          ng-checked="!vm.trip.type">
+        <img class="driver" src="driver.png">
+      </label>
+      <label>
+        <input
+          id="passenger"
+          ng-model="vm.trip.type" 
+          type="radio" 
+          name="type" 
+          value="passenger"
+          ng-required="!vm.trip.type">
+        <img class="passenger" src="passenger.png">
+      </label>
     </div>
-
 
     <div class="email">
+      <div class="icon"><div class="point">@</div></div>
       <input 
       ng-model="vm.trip.email" 
       type="email" 
-      placeholder="name@email.com"/> 
+      placeholder="name@email.com"
+      required/> 
+      <p>You're email is private</p> 
     </div>
 
     <div class="alias">
+      <div class="icon"><div class="point">∅</div></div>
       <input 
       ng-model="vm.trip.alias" 
       type="text" 
-      placeholder="Alias"/> 
+      placeholder="Alias"
+      required/> 
+      <p>This is how other users will see you</p>
     </div>
 
-    <button 
-      ng-click="vm.createRoute(vm.trip)">Post Route
-    </button>  
-
-  </div>
-  </form>
+    <div class="date">
+      <input
+        id="datepicker"
+        ng-model="vm.trip.date"
+        value="new Date()"/> 
+    </div>
+  
+    <div class="submit">
+      <button 
+        type="button" ng-click="vm.createRoute(vm.trip)">⇧
+      </button> 
+    </div> 
+</form>
 
 
