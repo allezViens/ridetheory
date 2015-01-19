@@ -26,14 +26,14 @@ app.config.update(
 db = SQLAlchemy(app)
 mail = Mail(app)
 
+#Must happen after the db is imported because connect and communication reply on mail and db
+#This avoids circular import
 from connect import * 
 from communication import *
 
-#Places for people to go 
+#Routes for users
 @app.route('/')
 def root():
-	print 'root'
-	print app
 	return app.send_static_file('index.html')
 
 @app.route('/trip/<urlID>')
@@ -41,18 +41,20 @@ def trip(urlID):
 	if(urlExists(urlID,True)):
 		return app.send_static_file('index.html')
 	else: 
-		print 'url does not exist'
 		return '404 route not found'
 	
-#Places for developers to go
-@app.route('/api/driver', methods=['POST','GET'])
+#Routes for the api
+@app.route('/api/driver', methods=['POST', 'GET'])
 def driver():
+	#gets all information about driver, including picks 
 	if (request.method == 'GET'):
 		email = request.args.get('email')
 		results = getDriverInfo(email)
 		return jsonify(results)
+	#adds driver to the database (DOES NOT UPDATE, USE API/TRIP POST)
 	if (request.method == 'POST'):
-		if (request.headers['Content-Type'][:16] == 'application/json'):
+		#Handles both postman and regular content headers
+		if (request.headers['Content-Type'].startsWith('application/json')):
 			data = json.loads(request.data)
 			oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
 			dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
@@ -62,14 +64,14 @@ def driver():
 		else:
 			return 'Incorrect data type for POST request. Use JSON format.'
 
-@app.route('/api/passenger', methods=['POST','GET'])
+@app.route('/api/passenger', methods=['POST', 'GET'])
 def passenger():
 	if (request.method == 'GET'):
 		email = request.args.get('email')
 		results = getPassengerInfo(email)
 		return jsonify(results)
 	if (request.method == 'POST'):
-		if (request.headers['Content-Type'][:16] == 'application/json'):
+		if (request.headers['Content-Type'].startsWith('application/json')):
 			data = json.loads(request.data)
 			oLat, oLon = float(data['origin'][0]), float(data['origin'][1])
 			dLat, dLon = float(data['destination'][0]), float(data['destination'][1])
@@ -79,6 +81,7 @@ def passenger():
 		else:
 			return 'Incorrect data type for POST request. Use JSON format.'
 
+#Gets drivers for a specific passenger origin and destination
 @app.route('/api/driver/matches', methods=['GET'])
 def driverMatches():
 	if (request.method == 'GET'):
@@ -90,6 +93,7 @@ def driverMatches():
 	else:
 		return 'Only GET requests are allowed on this route'
 
+#Gets passengers for as specific driver origin and destination 
 @app.route('/api/passenger/matches', methods=['GET'])
 def passengerMatches():
 	if (request.method == 'GET'):
@@ -101,9 +105,10 @@ def passengerMatches():
 	else:
 		return 'Only GET requests are allowed.'
 
+#Sends message to a driver/passenger. fromType is needed to determine in which db table to search. 
 @app.route('/api/message', methods=['POST'])
 def message():
-	if (request.headers['Content-Type'][:16] == 'application/json'):
+	if (request.headers['Content-Type'].startsWith('application/json')):
 		data = json.loads(request.data)
 		if(sendMessage(data['to'], data['from'], data['message'], data['fromType'])):
 			return 'Message sent successfully.'
@@ -112,26 +117,28 @@ def message():
 	else: 
 		return 'Incorrect data type for POST request. Use JSON format.'
 
+#Route to update passenger or driver or get all information associated with route. 
+#Type not needed, will be determined by url token. 
 @app.route('/api/trip', methods=['GET', 'POST'])
 def apiTrip():
 	if (request.method == 'GET'):
 		urlType, info = getInfoByUrl(request.args.get('token'))
-		if(urlType == 'P'):
+		if (urlType == 'P'):
 		  return jsonify(passenger=info)
-		if(urlType == 'D'):
+		if (urlType == 'D'):
 		  return jsonify(driver=info)
 		else:
 			return 'ERROR. No info associated with URL token '
 	if (request.method == 'POST'):
 		data = json.loads(request.data)
-		if(urlExists(data['token'],False)):
+		if (urlExists(data['token'],False)):
 		  data = customutilities.detuplify(data)
-		  if(data['type'][0].upper()=='D'):
-		  	if(updateDriver(data)):
+		  if (data['type'].upper().startsWith('D')):
+		  	if (updateDriver(data)):
 		  		return 'Driver record updated successfully'
 		  	else:
 		  		return 'ERROR. Driver record was not updated.'
-		  elif (data['type'][0].upper()=='P'):
+		  elif (data['type'].upper().startsWith('P')):
 		  	if(updatePassenger(data)):
 		  		return 'Passenger record updated successfully'
 		  	else:
@@ -153,25 +160,25 @@ def tripPicks():
 		else:
 			return 'ERROR. No route associated with token or no token given.'
 	if (request.method == 'POST'):
-		if (request.headers['Content-Type'][:16] == 'application/json'):
+		if (request.headers['Content-Type'].startsWith('application/json')):
 			data = json.loads(request.data)
 			type, info = getInfoByUrl(data['token'])
-			if (type=='D'):
-				if(data['pickType'][0].upper()=='A'):
+			if (type == 'D'):
+				if(data['pickType'].upper().startsWith('A')):
 					pickPassenger(data['email'], info['email'], True)
 					sendMessage(data['email'], info['email'], 'D')
 					return 'Successful pick'
-				elif (data['pickType'][0].upper()=='D'):
+				elif (data['pickType'].upper().startsWith('D')):
 					pickPassenger(data['email'], info['email'], False)
 					return 'Successful pick'
 				else:
 					return 'Incorrect pick type. Specify add or delete.'
-			if (type=='P'):
-				if(data['pickType'][0].upper()=='A'):
+			if (type == 'P'):
+				if(data['pickType'].upper().startsWith('A')):
 					pickDriver(data['email'], info['email'], True)
 					sendMessage(data['email'], info['email'], 'P')
 					return 'Successful pick'
-				elif (data['pickType'][0].upper()=='D'):
+				elif (data['pickType'].upper().startsWith('D')):
 					pickDriver(data['email'], info['email'], False)
 					return 'Successful pick'
 				else:

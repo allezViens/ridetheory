@@ -33,9 +33,14 @@
          method: 'GET',
          url: '/api/trip?',
          params: { token: token }
-       }).success(function(data){
-         RouteFactory.tripData = data;
        })
+        // .success(function(data){
+        //   console.log('start test animation');
+        //  RouteFactory.tripData = data;
+        // })
+        // .error(function(status) {
+        //   console.log(status);
+        // })
     }
 
 
@@ -108,13 +113,13 @@
         url: '/api/' + tripObject.type,
         data: JSON.stringify(tripObject)
       })
-      .success(function (data) {
-        console.log(data);
-      })
-      .error(function(error){
-        console.log(error);
-        console.log("could not create route");
-      });     
+      // .success(function (data) {
+      //   console.log(data);
+      // })
+      // .error(function(error){
+      //   console.log(error);
+      //   console.log("could not create route");
+      // });     
     }
 
     // returns an object with latitude and longitude

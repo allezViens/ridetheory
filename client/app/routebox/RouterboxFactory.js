@@ -8,83 +8,15 @@
 
     var RouterboxFactory = {
       compare: compare,
-      addUserToRoute: addUserToRoute,
+      geocode: geocode,
       reverseGeocode: reverseGeocode,
-      route: route
-    }
+    };
 
     return RouterboxFactory;
-
-      function compare (tupleA, tupleB) {
-        return (tupleA[0] === tupleB[0] && tupleA[1] === tupleB[1]);
-      }
-
-      // Dummy data
-      // var matches = [
-      //   {origin: [37.8044557, -122.2713563], destination: [37.3438502,-121.8831349], alias: 'Jonathan', email: 'Jonathan@gmail.com'},
-      //   {origin: [37.5482697, -121.9885719], destination: [37.431359,-121.885252153599], alias: 'Thomas', email: 'Thomas@gmail.com'},
-      // ];
-      // var waypoints = [[37.5482697, -121.9885719],[37.8044557, -122.2713563],[37.431359,-121.885252153599],[37.3438502,-121.8831349]];      
-      
-      // takes an array of waypoints and returns a new array of objects
-      // used to generate data for route graphic display
-      // { type: origin/destination tuple, alias: name}
-      function addUserToRoute(user,index){
-        RouterboxFactory.reverseGeocode(user.origin)
-          .success(function (data) {
-            $timeout(function () {
-              route.push({type: 'origin', alias: user.alias, address: data.results[0].formatted_address});
-            }, index * 75);
-          })
-          .error(function () {
-            console.log('reverseGeocode error!');
-          });
-
-        RouterboxFactory.reverseGeocode(user.destination)
-          .success(function (data) {
-            $timeout(function () {
-              route.push({type: 'destination', alias: user.alias, address: data.results[0].formatted_address});
-            }, index * 75);
-          })
-          .error(function () {
-            console.log('reverseGeocode error!');
-          });
-      }
-
-
-      function route (waypoints, matches, route) {
-        // convert origin to address
-        var deferred = $q.defer();
-
-        angular.forEach(waypoints,function (waypoint, index, cb) {
-          angular.forEach(matches.matches,function (user) {
-            if (compare(waypoint, user.origin)) {
-              RouterboxFactory.reverseGeocode(user.origin)
-                .success(function (data) {
-                  $timeout(function () {
-                    route.push({type: 'origin', alias: user.alias, address: data.results[0].formatted_address});
-                  }, index * 75);
-                })
-                .error(function () {
-                  console.log('reverseGeocode error!');
-                });
-            } else if (compare(waypoint, user.destination)) {
-              RouterboxFactory.reverseGeocode(user.destination)
-                .success(function (data) {
-                  $timeout(function () {
-                    route.push({type: 'destination', alias: user.alias, address: data.results[0].formatted_address});
-                  }, index * 75);
-                })
-                .error(function () {
-                  console.log('reverseGeocode error!');
-                });
-            }
-          });
-        });
-
-        deferred.resolve();
-        return deferred.promise;
-      }
+    
+    function compare (tupleA, tupleB) {
+      return (tupleA[0] === tupleB[0] && tupleA[1] === tupleB[1]);
+    }
 
     // returns an object with latitude and longitude
     function reverseGeocode(coordinates) {
@@ -95,8 +27,17 @@
         method: 'GET',
         url: url
       });
-    }    
+    }   
 
+    function geocode (address) {
+      var baseURL = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
+      var key = "AIzaSyCGv1yOax6sOABKLyT6r9Fu5khXoTPlDfs";
+      var url = baseURL + address + '&key=' + key;
+      return $http({
+        method: 'GET',
+        url: url
+      });      
+    } 
   }
 })();
 
