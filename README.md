@@ -1,7 +1,7 @@
 # Allez Viens
 
 ## Overview
-Ride Theory helps people share rides with each other, whether it's a short 15 min. ride or a trip across Europe.  We wanted our app to be easy and intuitive.  There is no log-in, no sign up.  Simply create a route, find people going the same way, and link up via email.  
+Ride Theory helps people share rides with each other, whether it's a short 15 min. ride or a trip across Europe.  We wanted our app to be easy and intuitive.  No log-in, no sign up.  Simply create a route, find people going the same way, and link up via email.  
 
 ## Team
 
@@ -26,6 +26,8 @@ Ride Theory helps people share rides with each other, whether it's a short 15 mi
 - Flask 0.10.x
 - Angular 1.3.x
 
+## Development
+
 ### Installing Dependencies
 
 From within the root directory:
@@ -37,7 +39,7 @@ bower install
 pip install Django==1.7.1
 ```
 
-## Running
+### Running
 Development
 ```
 python run.py
