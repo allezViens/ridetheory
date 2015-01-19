@@ -20,3 +20,23 @@
   outline: none;
 }
 
+@mixin if-invalid {
+  transition:all ease-out 300ms;
+  background: transparent;
+  &.ng-touched.ng-invalid:not(:focus) {
+    color:blue;
+    border-bottom: 2px solid $red;
+    &:before {
+      content: 'Invalid email';
+      font-size: 10px;
+    }
+  }
+}
+
+@mixin clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}

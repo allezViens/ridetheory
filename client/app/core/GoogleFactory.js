@@ -54,7 +54,8 @@
       }
       tripMarkers[position] = new google.maps.Marker({
         position: convertToLocation(coordinate),
-        map: map
+        map: map,
+        
       });
       tripMarkers[position].setMap(map);
       boundMap();
@@ -94,15 +95,17 @@
       directionsService.route(request, function(result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
           directionsDisplay.setDirections(result);
-          GoogleFactory.routeWaypoints = result.kc.waypoints;
-          GoogleFactory.routeOrder = result.routes[0].waypoint_order;
-          var waypoints = [];
-          for(var i=0;i < GoogleFactory.routeWaypoints.length;i++){
-            var waypoint = GoogleFactory.routeWaypoints[GoogleFactory.routeOrder[i]];
-            waypoints.push([waypoint.location.k,waypoint.location.D]);
+          if (result.kc.waypoints){
+            GoogleFactory.routeWaypoints = result.kc.waypoints;
+            GoogleFactory.routeOrder = result.routes[0].waypoint_order;
+            var waypoints = [];
+            for(var i=0; i < GoogleFactory.routeWaypoints.length;i++){
+              var waypoint = GoogleFactory.routeWaypoints[GoogleFactory.routeOrder[i]];
+              waypoints.push([waypoint.location.k,waypoint.location.D]);
+            }
+            GoogleFactory.routeWaypoints = waypoints;
+            callback(GoogleFactory.routeWaypoints);
           }
-          GoogleFactory.routeWaypoints = waypoints;
-          callback(GoogleFactory.routeWaypoints);
         }
       });
     }
@@ -215,7 +218,7 @@
    
     function initialize(lat,lon) {
       var center = new google.maps.LatLng(lat, lon);
-      var mapStyles = [{"stylers":[{"visibility":"off"}]},{"featureType":"road","stylers":[{"visibility":"on"},{"color":"#ffffff"}]},{"featureType":"road.arterial","stylers":[{"visibility":"on"},{"color":"#fee379"}]},{"featureType":"road.highway","stylers":[{"visibility":"on"},{"color":"#fee379"}]},{"featureType":"landscape","stylers":[{"visibility":"on"},{"color":"#f3f4f4"}]},{"featureType":"water","stylers":[{"visibility":"on"},{"color":"#7fc8ed"}]},{},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"poi.park","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#83cead"}]},{"elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"weight":0.9},{"visibility":"off"}]}];
+      var mapStyles = [{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"hue":"#000000"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"hue":"#000000"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"water","elementType":"all","stylers":[{"hue":"#000000"},{"saturation":-100},{"lightness":100},{"visibility":"on"}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"hue":"#D1D3D4"},{"saturation":-88},{"lightness":-7},{"visibility":"on"}]},{"featureType":"landscape","elementType":"labels","stylers":[{"hue":"#939598"},{"saturation":-91},{"lightness":-34},{"visibility":"on"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#414042"},{"saturation":-98},{"lightness":-60},{"visibility":"on"}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#E3EBE5"},{"saturation":-61},{"lightness":57},{"visibility":"off"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"hue":"#E3EBE5"},{"saturation":-100},{"lightness":57},{"visibility":"on"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"visibility":"off"}]},{"featureType":"administrative.country","elementType":"all","stylers":[{"hue":"#E3EBE5"},{"saturation":-100},{"lightness":81},{"visibility":"off"}]},{"featureType":"administrative.province","elementType":"all","stylers":[{"hue":"#E3EBE5"},{"saturation":-100},{"lightness":81},{"visibility":"off"}]},{"featureType":"administrative.locality","elementType":"geometry","stylers":[{"hue":"#FFFFFF"},{"saturation":0},{"lightness":100},{"visibility":"on"}]},{"featureType":"administrative.locality","elementType":"labels","stylers":[{"hue":"#939598"},{"saturation":2},{"lightness":59},{"visibility":"on"}]},{"featureType":"administrative.neighborhood","elementType":"labels","stylers":[{"hue":"#939598"},{"saturation":-100},{"lightness":16},{"visibility":"on"}]},{"featureType":"administrative.neighborhood","elementType":"all","stylers":[{"hue":"#939598"},{"saturation":-100},{"lightness":16},{"visibility":"on"}]},{"featureType":"administrative.land_parcel","elementType":"all","stylers":[{"hue":"#939598"},{"saturation":-100},{"lightness":16},{"visibility":"simplified"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"hue":"#939598"},{"saturation":-98},{"lightness":-8},{"visibility":"on"}]},{"featureType":"road.highway","elementType":"labels","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"hue":"#6D6E71"},{"saturation":-98},{"lightness":-43},{"visibility":"on"}]},{"featureType":"road.arterial","elementType":"labels","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"hue":"#000000"},{"saturation":-100},{"lightness":-100},{"visibility":"on"}]},{"featureType":"road.local","elementType":"labels","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"off"}]}];
       var mapOptions = {zoom: 10,center: center,mapTypeControl: false,mapTypeControlOptions: {mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']},streetViewControl: false,panControl: false,zoomControl: true,zoomControlOptions: {style: google.maps.ZoomControlStyle.SMALL,position: google.maps.ControlPosition.RIGHT_BOTTOM},scaleControl: true};
       // Instantiate map with styles
       document.getElementById('map-canvas').style.height = window.innerHeight + "px";
@@ -227,7 +230,14 @@
       overlayMap = new google.maps.OverlayView();
       overlayMap.draw = function () {};
       overlayMap.setMap(map);
-      directionsDisplay = new google.maps.DirectionsRenderer();
+      var polylineDefines = new google.maps.Polyline({
+        strokeColor: '#7FC8ED',
+        strokeOpacity: 0.5,
+        strokeWeight: 10
+      });
+      directionsDisplay = new google.maps.DirectionsRenderer({
+        polylineOptions: polylineDefines
+      });
       directionsDisplay.setMap(map);
       services.initialized = true;
     }

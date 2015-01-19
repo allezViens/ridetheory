@@ -14,6 +14,16 @@
       vm.removeDestination = removeDestination;
       vm.removeOrigin = removeOrigin;
 
+      var picker = new Pikaday({
+        field: document.getElementById('datepicker'),
+        firstDay: 1,
+        minDate: new Date(),
+        maxDate: new Date('2020-12-31'),
+        yearRange: [2000, 2020],
+        bound: false,
+        setDefaultDate: true,
+        container: document.getElementsByClassName('date')[0]
+      });
 
       $scope.$watch('vm.trip.origin',function(collection){
         if (collection){
@@ -35,6 +45,10 @@
         }
       },false);
 
+      function initialize() {
+        document.getElementById('datepicker').value = new Date();
+      }
+
       function removeDestination(){
         GoogleFactory.removeDestination()
       }
@@ -44,21 +58,21 @@
       }
 
       function createRoute(trip){
-        vm.trip = updateModel(trip);
-        console.log(vm.trip);
-        RouteFactory
-        .createRoute(vm.trip)
-        .then(function(){
-          window.location.href="/confirm.html";
-        })
+        console.log(trip);
+        // vm.trip = updateModel(trip);
+        // console.log(vm.trip);
+        // RouteFactory
+        // .createRoute(vm.trip)
+        // .then(function(){
+        //   window.location.href="/confirm.html";
+        // })
       }
 
       function updateModel(trip){
-
         var obj = angular.copy(trip);
         obj.origin = [vm.trip.origin.geometry.location.k,vm.trip.origin.geometry.location.D];
         obj.destination = [vm.trip.destination.geometry.location.k,vm.trip.destination.geometry.location.D];
-        obj.date = trip.date.toISOString();
+        obj.date = obj.date ? trip.date.toISOString() : new Date().toISOString();
         return obj;
       }
 

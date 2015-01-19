@@ -1,5 +1,9 @@
 $font-stack:    "Open Sans", sans-serif;
-$green: rgba(136, 207, 48, 0.75);
+$blue: #7fc8ed;
+$black: #312f2f;
+$green: #83cead;
+$red: #f79f79;
+$yellow: #f7d08a;
 @import "./client/bower_components/normalize.css/normalize.css";
 @import "mixins";
 
@@ -12,6 +16,7 @@ $green: rgba(136, 207, 48, 0.75);
 
 html, body, #container {
   width: 100%;
+  height: 100%;
 }
 
 html {
@@ -21,9 +26,11 @@ html {
 
 #container {
   position: relative;
+  overflow: hidden;
 }
 
 @import "map";
+@import "pikaday";
 @import "panel";
 @import "confirm";
 @import "routebox";

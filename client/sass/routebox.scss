@@ -1,29 +1,24 @@
-body {
-  background-color: #4EB9E6;
-  height: 100px;
-  padding: 0px;
-  margin: 0px;
-}
 
-td {
-  padding: 2px;
-  margin: 0px;
-  text-align: left;
-}
-
-tr {
-  cursor: pointer;
-}
-
-div {
-  text-align: left;
-}
 
 .routebox {
   float: left;
   width: 23%;
   padding: 1%;
   background-color: white;
+  td {
+    padding: 2px;
+    margin: 0px;
+    text-align: left;
+  }
+
+  tr {
+    cursor: pointer;
+  }
+
+  div {
+    text-align: left;
+  }
+  
 }
 
 .origin {
