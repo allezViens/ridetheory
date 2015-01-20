@@ -80,7 +80,7 @@
       var data = { token: token };
       return $http({
         method: 'GET',
-        url: '/api/trip?',
+        url: '/api/trip',
         params: { token: token }
       }).success(function(data){
         RouteFactory.tripData = data;

@@ -56,10 +56,8 @@
       function createRoute(trip){
         var newTrip = updateModel(trip);
         RouteFactory
-        .createRoute(newTrip)
-        .then(function(){
-          window.location.href="/confirm.html";
-        })
+        .createRoute(newTrip);
+        window.location.href="/confirm.html";
       }
 
       function updateModel(trip){

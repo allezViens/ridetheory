@@ -1,4 +1,6 @@
 .routebox {
+  overflow: hidden;
+  overflow-y: scroll;
   height: 100%;
   z-index: 1;
   position: relative;
@@ -6,51 +8,60 @@
   width: 270px;
   // padding: 1%;
   background-color: white;
-  height: 100%;
   -webkit-box-shadow: 0.5px 0 38.1px 0 rgba(220, 221, 222, 0.28);
   -moz-box-shadow:    0.5px 0 38.1px 0 rgba(220, 221, 222, 0.28);
   box-shadow:         0.5px 0 38.1px 0 rgba(220, 221, 222, 0.28);
+
+  img {
+    width: 100%;
+    &.logo {
+      width: 100%;
+      padding: 5% 5%;
+      border-bottom: 2px dotted grey;
+    }
+  }
+
+  .waypoint {
+    position: relative;
+    h3 {
+      font-size: 110%;
+      font-weight: bold;
+      margin: 0 0 5px 0;
+    }
+    span {
+      color: grey;
+    }
+  }
+
+  .origin {
+    height: 50px;
+    width: 50px;
+    border-radius: 25px;
+    background-color: $green;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    color: white;
+    margin: 5px;
+  }
+
+
+  .destination {
+    @extend .origin;
+    background-color: $red;
+  }
   
   td {
-    padding: 2px;
+    padding: 20px 2px;
     margin: 0px;
     text-align: left;
   }
 
   tr {
+    padding: 10px 0;
     cursor: pointer;
+    border-bottom: 1px dotted $blue;
   }
 
-  div {
-    text-align: left;
-  }
 }
 
-.origin {
-  height: 70px;
-  width: 70px;
-  border-radius: 35px;
-  background-color: $green;
-  height: 70px;
-  line-height: 70px;
-  text-align: center;
-  color: white;
-  margin: 5px;
-}
-
-
-.destination {
-  height: 70px;
-  width: 70px;
-  border-radius: 35px;
-  background-color: $red;
-  height: 70px;
-  line-height: 70px;
-  text-align: center;
-  color: white;
-  margin: 5px;
-}
-
-.tweet {
-  text-align: center;
-}

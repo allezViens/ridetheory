@@ -166,7 +166,7 @@ def tripPicks():
 			if (type == 'D'):
 				if(data['pickType'].upper().startswith('A')):
 					pickPassenger(data['email'], info['email'], True)
-					sendMessage(data['email'], info['email'], 'D')
+					# sendMessage(data['email'], info['email'], 'D')
 					return 'Successful pick'
 				elif (data['pickType'].upper().startswith('D')):
 					pickPassenger(data['email'], info['email'], False)
@@ -176,7 +176,7 @@ def tripPicks():
 			if (type == 'P'):
 				if(data['pickType'].upper().startswith('A')):
 					pickDriver(data['email'], info['email'], True)
-					sendMessage(data['email'], info['email'], 'P')
+					# sendMessage(data['email'], info['email'], 'P')
 					return 'Successful pick'
 				elif (data['pickType'].upper().startswith('D')):
 					pickDriver(data['email'], info['email'], False)

@@ -34,10 +34,9 @@
         RouterboxFactory.reverseGeocode(tripData.origin)
         .success(function (data) {
           // add Start
-          vm.route.push({type: 'origin', alias: tripData.alias, waypointLabel: 'A', address: data.results[0].formatted_address});             
+          vm.route.push({type: 'origin', alias: 'Start', waypointLabel: 'A', address: data.results[0].formatted_address});             
           
           angular.forEach(waypointOrder,function(tuple,index){
-            console.log(tuple);
             angular.forEach(waypoints,function(user){              
               if (RouterboxFactory.compare(tuple,user.origin)) {
                 RouterboxFactory.reverseGeocode(user.origin).
@@ -66,8 +65,8 @@
           RouterboxFactory.reverseGeocode(tripData.destination).
             success(function (data) {
               $timeout(function() {
-                vm.route.push({type: 'destination', waypointLabel: String.fromCharCode(++alphabetCode), alias: tripData.alias, address: data.results[0].formatted_address});              
-              }, waypointOrder.length * 75);
+                vm.route.push({type: 'destination', waypointLabel: String.fromCharCode(++alphabetCode), alias: 'Finish', address: data.results[0].formatted_address});              
+              }, waypointOrder.length * 100);
             });
         });
       }
@@ -86,7 +85,6 @@
       }
 
       function regenerateRoute() {
-        console.log(vm.trip.origin);
         GoogleFactory.setOrigin(vm.trip.origin);
         GoogleFactory.setDestin(vm.trip.destination);
 
@@ -99,11 +97,14 @@
                 //add to map
                 mapWaypoints.push({ location: GoogleFactory.convertToLocation(possible.origin), stopover:true });
                 mapWaypoints.push({ location: GoogleFactory.convertToLocation(possible.destination), stopover:true });
+                console.log(vm.possibleMatches);
                 vm.possibleMatches.splice(index,1);
+                console.log('after',vm.possibleMatches);
                 routeBox.push(possible);
               }
             });
         });
+
         GoogleFactory.drawRoute(vm.trip.origin,vm.trip.destination,mapWaypoints,function(data) {
           createRoute(vm.trip,routeBox,data);
         });
@@ -124,7 +125,7 @@
             pickType: 'add'
           }
         })
-        .success(function(){
+        .success(function(data){
           initialize();
         });
       }
