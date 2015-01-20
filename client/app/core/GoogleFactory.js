@@ -38,28 +38,7 @@
       });
 
       userMarkers.push(marker);
-      var contentString = '<div><h1>' + alias + '</h1></div>';
-
-      alias = new InfoBubble({
-        map: map,
-        content: contentString,
-        position: convertToLocation(coordinate),
-        shadowStyle: 1,
-        padding: 0,
-        borderRadius: 5,
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        minWidth: 100,
-        maxWidth: 200,
-        minHeight: 50,
-        arrowSize: 1,
-        borderWidth: 1,
-        disableAutoPan: true,
-        hideCloseButton: true,
-        arrowPosition: -5,
-        backgroundClassName: 'bubble',
-        arrowStyle: 1
-      });
-
+      
       google.maps.event.addListener(marker, 'click', function() {
         $rootScope.$broadcast('tripUpdated',marker.customEmail);
       });
@@ -169,20 +148,13 @@
       map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);   
       map.mapTypes.set('map_style', new google.maps.StyledMapType(mapStyles, {name: "Styled Map"}));
       map.setMapTypeId('map_style');  
-      console.log('map',map);
 
       // Create bounds
       overlayMap = new google.maps.OverlayView();
       overlayMap.draw = function () {};
       overlayMap.setMap(map);
-      var polylineDefines = new google.maps.Polyline({
-        strokeColor: '#7FC8ED',
-        strokeOpacity: 0.5,
-        strokeWeight: 10
-      });
-      directionsDisplay = new google.maps.DirectionsRenderer({
-        polylineOptions: polylineDefines
-      });
+
+      directionsDisplay = new google.maps.DirectionsRenderer();
       directionsDisplay.setMap(map);
     }
 

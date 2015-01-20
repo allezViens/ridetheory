@@ -185,7 +185,7 @@ def urlExists(url, validate):
   else:
     return False
 
-def sendMessage(to, sender, message, fromType):
+def sendMessage(to, sender, fromType):
   sent = True
   try:
     if(fromType.upper().startswith('D')):

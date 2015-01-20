@@ -6,16 +6,15 @@
     .controller('MapCtrl', MapCtrl);
 
   /* ngInject */
-  function MapCtrl(GoogleFactory,RouteFactory,$scope, dataservice) {
+  function MapCtrl(GoogleFactory,RouteFactory) {
     var vm = this;
 
     //dyanmically set map width
-    var panelWidth = document.getElementsByClassName('fixed-side')[0].offsetWidth;
-    var mapWidth = 'width:' + (window.innerWidth  - panelWidth) + 'px';
-    document.getElementsByClassName('map')[0].setAttribute("style",mapWidth);
+     var panelWidth = document.getElementsByClassName('fixed-side')[0].offsetWidth;
+     var mapWidth = 'width:' + (window.innerWidth  - panelWidth) + 'px';
+     document.getElementsByClassName('map')[0].setAttribute("style",mapWidth);
 
     // Activate map
-    console.log('calling!');
-    dataservice.getClientLoc();    
+    GoogleFactory.initialize(37.7833,-122.4167);  
   }
 })();
